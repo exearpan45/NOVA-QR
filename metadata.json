@@ -1,0 +1,10 @@
+{
+  "name": "NOVA QR",
+  "description": "Create customized QR codes in seconds. Fast, professional, lightweight QR code generator and scanner with live preview, custom styling, center logo, history, favorites, and offline PWA support.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
