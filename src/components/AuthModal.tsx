@@ -1,3 +1,4 @@
+```tsx
 import React, { useState, useEffect } from 'react';
 import {
   X,
@@ -16,7 +17,6 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { NovaLogo } from './NovaLogo';
-import { HCaptchaWidget } from './HCaptchaWidget';
 import { syncHistoryWithCloud } from '../utils/cloudSync';
 
 interface AuthModalProps {
@@ -36,7 +36,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 }) => {
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>(initialMode);
-  
+
   // Email / Password states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -54,8 +54,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [facebookLoading, setFacebookLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const [captchaResetTrigger, setCaptchaResetTrigger] = useState(0);
 
   // Sync mode whenever modal is opened
   useEffect(() => {
@@ -65,8 +63,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setInfoMessage(null);
       setPhoneStep('request');
       setOtpCode('');
-      setCaptchaToken(null);
-      setCaptchaResetTrigger((prev) => prev + 1);
     }
   }, [isOpen, initialMode]);
 
@@ -82,16 +78,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setPhoneStep('request');
     setErrorMessage(null);
     setInfoMessage(null);
-    setCaptchaToken(null);
-    setCaptchaResetTrigger((prev) => prev + 1);
   };
 
   const handleSwitchMode = (newMode: 'login' | 'signup' | 'forgot') => {
     setMode(newMode);
     setErrorMessage(null);
     setInfoMessage(null);
-    setCaptchaToken(null);
-    setCaptchaResetTrigger((prev) => prev + 1);
   };
 
   // GitHub OAuth Sign In
@@ -113,6 +105,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
     } catch (err: unknown) {
       const msg = (err as Error).message || '';
+
       if (
         msg.toLowerCase().includes('unsupported provider') ||
         msg.toLowerCase().includes('not enabled')
@@ -125,6 +118,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           msg || 'Failed to initialize GitHub sign in. Please try again.'
         );
       }
+
       setGithubLoading(false);
     }
   };
@@ -148,6 +142,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
     } catch (err: unknown) {
       const msg = (err as Error).message || '';
+
       if (
         msg.toLowerCase().includes('unsupported provider') ||
         msg.toLowerCase().includes('not enabled')
@@ -160,6 +155,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           msg || 'Failed to initialize Facebook sign in. Please try again.'
         );
       }
+
       setFacebookLoading(false);
     }
   };
@@ -170,12 +166,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setErrorMessage(null);
     setInfoMessage(null);
 
-    if (!captchaToken) {
-      setErrorMessage('Please complete the hCaptcha verification challenge to send an SMS code.');
-      return;
-    }
-
     let cleanPhone = phone.trim().replace(/[\s-()]/g, '');
+
     if (!cleanPhone) {
       setErrorMessage('Please enter your mobile number.');
       return;
@@ -187,12 +179,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
 
     if (cleanPhone.length < 8) {
-      setErrorMessage('Please enter a valid mobile number with country code (e.g. +1234567890 or +919876543210).');
+      setErrorMessage(
+        'Please enter a valid mobile number with country code (e.g. +1234567890 or +919876543210).'
+      );
       return;
     }
 
     try {
       setLoading(true);
+
       const { error } = await supabase.auth.signInWithOtp({
         phone: cleanPhone,
       });
@@ -201,10 +196,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
       setPhone(cleanPhone);
       setPhoneStep('verify');
-      setInfoMessage(`Verification code sent to ${cleanPhone}. Please enter the 6-digit OTP.`);
+
+      setInfoMessage(
+        `Verification code sent to ${cleanPhone}. Please enter the 6-digit OTP.`
+      );
+
       onSuccess(`OTP sent to ${cleanPhone}`);
     } catch (err: unknown) {
       const msg = (err as Error).message || '';
+
       if (
         msg.toLowerCase().includes('unsupported provider') ||
         msg.toLowerCase().includes('sms provider') ||
@@ -214,7 +214,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           'SMS provider (Twilio / MessageBird) is not configured yet in your backend dashboard. Please configure an SMS provider or use Email / GitHub.'
         );
       } else {
-        setErrorMessage(msg || 'Failed to send OTP to mobile number. Please check the number and try again.');
+        setErrorMessage(
+          msg ||
+            'Failed to send OTP to mobile number. Please check the number and try again.'
+        );
       }
     } finally {
       setLoading(false);
@@ -228,13 +231,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setInfoMessage(null);
 
     const cleanToken = otpCode.trim();
+
     if (!cleanToken || cleanToken.length < 4) {
-      setErrorMessage('Please enter the verification code received via SMS.');
+      setErrorMessage(
+        'Please enter the verification code received via SMS.'
+      );
       return;
     }
 
     try {
       setLoading(true);
+
       const { data, error } = await supabase.auth.verifyOtp({
         phone,
         token: cleanToken,
@@ -261,7 +268,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         onClose();
       }
     } catch (err: unknown) {
-      setErrorMessage((err as Error).message || 'Invalid or expired verification code. Please try again.');
+      setErrorMessage(
+        (err as Error).message ||
+          'Invalid or expired verification code. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -274,25 +284,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setInfoMessage(null);
 
     const cleanEmail = email.trim().toLowerCase();
+
     if (!cleanEmail || !cleanEmail.includes('@')) {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
 
+    // Forgot Password
     if (mode === 'forgot') {
       try {
         setLoading(true);
-        const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-          redirectTo: window.location.origin,
-        });
+
+        const { error } = await supabase.auth.resetPasswordForEmail(
+          cleanEmail,
+          {
+            redirectTo: window.location.origin,
+          }
+        );
+
         if (error) throw error;
-        setInfoMessage('Password reset link sent to your email. Please check your inbox.');
+
+        setInfoMessage(
+          'Password reset link sent to your email. Please check your inbox.'
+        );
+
         onSuccess('Password reset link sent to your email');
       } catch (err: unknown) {
-        setErrorMessage((err as Error).message || 'Failed to send password reset email.');
+        setErrorMessage(
+          (err as Error).message ||
+            'Failed to send password reset email.'
+        );
       } finally {
         setLoading(false);
       }
+
       return;
     }
 
@@ -301,19 +326,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
-    if (!captchaToken) {
-      setErrorMessage('Please complete the hCaptcha verification challenge to proceed.');
-      return;
-    }
-
+    // Sign Up
     if (mode === 'signup') {
       if (password !== confirmPassword) {
-        setErrorMessage('Passwords do not match. Please verify and try again.');
+        setErrorMessage(
+          'Passwords do not match. Please verify and try again.'
+        );
         return;
       }
 
       try {
         setLoading(true);
+
         const { data, error } = await supabase.auth.signUp({
           email: cleanEmail,
           password,
@@ -342,23 +366,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           setInfoMessage(
             'Account registered! Please check your email to confirm your account before logging in.'
           );
-          onSuccess('Registration successful! Check email for verification.');
+
+          onSuccess(
+            'Registration successful! Check email for verification.'
+          );
         }
       } catch (err: unknown) {
-        setErrorMessage((err as Error).message || 'Registration failed. Please try again.');
+        setErrorMessage(
+          (err as Error).message ||
+            'Registration failed. Please try again.'
+        );
       } finally {
         setLoading(false);
       }
+
       return;
     }
 
     // Login mode
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
+
+      const { data, error } =
+        await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
 
       if (error) throw error;
 
@@ -375,7 +408,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onClose();
     } catch (err: unknown) {
       setErrorMessage(
-        (err as Error).message || 'Invalid email or password. Please verify your credentials.'
+        (err as Error).message ||
+          'Invalid email or password. Please verify your credentials.'
       );
     } finally {
       setLoading(false);
@@ -410,6 +444,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center mb-5">
           <NovaLogo size="sm" showTagline={false} />
+
           <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-3 text-white">
             {authMethod === 'phone'
               ? 'Mobile Number Sign-In'
@@ -419,6 +454,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               ? 'Create Your Account'
               : 'Reset Password'}
           </h2>
+
           <p className="text-xs text-slate-400 mt-1 max-w-xs">
             {authMethod === 'phone'
               ? 'Instant verification via mobile SMS OTP.'
@@ -444,6 +480,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               ) : (
                 <Github className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
               )}
+
               <span>GitHub</span>
             </button>
 
@@ -458,12 +495,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               ) : (
                 <Facebook className="w-3.5 h-3.5 text-blue-500 group-hover:scale-110 transition-transform" />
               )}
+
               <span>Facebook</span>
             </button>
           </div>
 
           <div className="relative my-4 flex items-center justify-center">
             <div className="border-t border-slate-800 w-full" />
+
             <span className="bg-slate-900 px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider absolute">
               or continue with
             </span>
@@ -488,6 +527,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <Mail className="w-3.5 h-3.5" />
             <span>Email</span>
           </button>
+
           <button
             type="button"
             onClick={() => {
@@ -521,17 +561,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
         )}
 
-        {/* FORM 1: Mobile Number (SMS OTP) */}
+        {/* FORM 1: Mobile Number */}
         {authMethod === 'phone' && (
           <div>
             {phoneStep === 'request' ? (
-              <form onSubmit={handleSendPhoneOtp} className="space-y-4">
+              <form
+                onSubmit={handleSendPhoneOtp}
+                className="space-y-4"
+              >
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Mobile Number (with country code)
                   </label>
+
                   <div className="relative">
                     <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+
                     <input
                       type="tel"
                       required
@@ -541,19 +586,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono"
                     />
                   </div>
+
                   <p className="text-[11px] text-slate-400 mt-1.5">
                     Include your country calling code (e.g. +1 for US, +91 for India).
                   </p>
-                </div>
-
-                {/* hCaptcha Verification */}
-                <div className="pt-1">
-                  <HCaptchaWidget
-                    onVerify={(token) => setCaptchaToken(token)}
-                    onExpire={() => setCaptchaToken(null)}
-                    resetTrigger={captchaResetTrigger}
-                    theme={theme}
-                  />
                 </div>
 
                 <button
@@ -575,12 +611,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </button>
               </form>
             ) : (
-              <form onSubmit={handleVerifyPhoneOtp} className="space-y-4">
+              <form
+                onSubmit={handleVerifyPhoneOtp}
+                className="space-y-4"
+              >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-xs font-semibold text-slate-300">
                       Enter 6-Digit SMS OTP
                     </label>
+
                     <button
                       type="button"
                       onClick={() => setPhoneStep('request')}
@@ -590,8 +630,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <span>Change Number</span>
                     </button>
                   </div>
+
                   <div className="relative">
                     <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+
                     <input
                       type="text"
                       maxLength={8}
@@ -603,8 +645,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono tracking-widest text-center"
                     />
                   </div>
+
                   <p className="text-[11px] text-slate-400 mt-1.5 text-center">
-                    Sent to <span className="font-mono text-cyan-300">{phone}</span>
+                    Sent to{' '}
+                    <span className="font-mono text-cyan-300">
+                      {phone}
+                    </span>
                   </p>
                 </div>
 
@@ -644,7 +690,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* FORM 2: Email & Password */}
         {authMethod === 'email' && (
           <div>
-            {/* Mode Switcher Tabs (Login vs Signup) */}
+            {/* Mode Switcher Tabs */}
             {mode !== 'forgot' && (
               <div className="flex items-center p-1 rounded-xl bg-slate-950/60 border border-slate-800/80 mb-4">
                 <button
@@ -658,6 +704,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 >
                   Log In
                 </button>
+
                 <button
                   type="button"
                   onClick={() => handleSwitchMode('signup')}
@@ -672,14 +719,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
             )}
 
-            <form onSubmit={handleEmailSubmit} className="space-y-4">
+            <form
+              onSubmit={handleEmailSubmit}
+              className="space-y-4"
+            >
               {mode === 'signup' && (
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Full Name
                   </label>
+
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+
                     <input
                       type="text"
                       value={fullName}
@@ -695,8 +747,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   Email Address
                 </label>
+
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+
                   <input
                     type="email"
                     required
@@ -714,6 +768,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <label className="text-xs font-semibold text-slate-300">
                       Password
                     </label>
+
                     {mode === 'login' && (
                       <button
                         type="button"
@@ -724,8 +779,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       </button>
                     )}
                   </div>
+
                   <div className="relative">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+
                     <input
                       type="password"
                       required
@@ -743,29 +800,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Confirm Password
                   </label>
+
                   <div className="relative">
                     <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+
                     <input
                       type="password"
                       required
                       value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onChange={(e) =>
+                        setConfirmPassword(e.target.value)
+                      }
                       placeholder="Repeat your password"
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     />
                   </div>
                 </div>
               )}
-
-              {/* hCaptcha Verification */}
-              <div className="pt-1">
-                <HCaptchaWidget
-                  onVerify={(token) => setCaptchaToken(token)}
-                  onExpire={() => setCaptchaToken(null)}
-                  resetTrigger={captchaResetTrigger}
-                  theme={theme}
-                />
-              </div>
 
               {/* Submit Button */}
               <button
@@ -785,6 +836,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       {mode === 'signup' && 'Create Account'}
                       {mode === 'forgot' && 'Send Recovery Email'}
                     </span>
+
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -831,3 +883,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     </div>
   );
 };
+```
+
+**After pasting:** save the file, then disable **hCaptcha/CAPTCHA in Supabase Authentication settings**. You can leave `HCaptchaWidget.tsx` for now; it won't be imported by this file anymore.
+
+One more thing: **your resend SMS button calls `handleSendPhoneOtp`, so that's still fine after removing hCaptcha.**
