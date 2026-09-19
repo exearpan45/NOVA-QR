@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Palette,
   Image as ImageIcon,
@@ -9,6 +9,10 @@ import {
   Trash2,
   Sliders,
   ShieldCheck,
+  BookmarkPlus,
+  Briefcase,
+  Check,
+  Plus,
 } from 'lucide-react';
 import {
   CornerDotType,
@@ -17,8 +21,10 @@ import {
   ErrorCorrectionLevel,
   QRStyleConfig,
   StylePresetKey,
+  BrandKit,
 } from '../types';
 import { STYLE_PRESETS, DEFAULT_STYLE } from '../utils/qrPresets';
+import { getStoredBrandKits, saveBrandKit } from '../utils/brandStorage';
 
 interface StyleCustomizerProps {
   styleConfig: QRStyleConfig;
@@ -62,7 +68,59 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
     { id: 'H', label: 'H (30%)', desc: 'Max tolerance (Best for logos)' },
   ];
 
+  const [brandKits, setBrandKits] = useState<BrandKit[]>([]);
+  const [isSavingBrandKit, setIsSavingBrandKit] = useState(false);
+  const [brandKitNameInput, setBrandKitNameInput] = useState('');
+  const [activeBrandKitId, setActiveBrandKitId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setBrandKits(getStoredBrandKits());
+  }, []);
+
+  const handleApplyBrandKit = (kit: BrandKit) => {
+    setActiveBrandKitId(kit.id);
+    onChange({
+      ...styleConfig,
+      fgColor: kit.dotColor,
+      bgColor: kit.backgroundColor,
+      dotType: kit.dotType,
+      cornerSquareType: kit.cornerSquareType,
+      cornerDotType: kit.cornerDotType,
+      cornerSquareColor: kit.cornerSquareColor,
+      cornerDotColor: kit.cornerDotColor,
+      errorCorrection: kit.errorCorrection,
+      logoUrl: kit.logoUrl || styleConfig.logoUrl,
+    });
+  };
+
+  const handleSaveCurrentAsBrandKit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!brandKitNameInput.trim()) return;
+
+    const newKit: BrandKit = {
+      id: `brand-${Date.now()}`,
+      name: brandKitNameInput.trim(),
+      dotColor: styleConfig.fgColor,
+      dotType: styleConfig.dotType,
+      cornerSquareColor: styleConfig.cornerSquareColor || styleConfig.fgColor,
+      cornerSquareType: styleConfig.cornerSquareType,
+      cornerDotColor: styleConfig.cornerDotColor || styleConfig.fgColor,
+      cornerDotType: styleConfig.cornerDotType,
+      backgroundColor: styleConfig.bgColor,
+      errorCorrection: styleConfig.errorCorrection,
+      logoUrl: styleConfig.logoUrl,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updated = saveBrandKit(newKit);
+    setBrandKits(updated);
+    setActiveBrandKitId(newKit.id);
+    setBrandKitNameInput('');
+    setIsSavingBrandKit(false);
+  };
+
   const handleApplyPreset = (presetKey: StylePresetKey) => {
+    setActiveBrandKitId(null);
     const preset = STYLE_PRESETS[presetKey];
     if (preset) {
       onChange({
@@ -120,6 +178,84 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Brand Profiles & Kits */}
+      <div className={sectionCardClass}>
+        <div className="flex items-center justify-between mb-2.5">
+          <span className={headerClass}>
+            <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
+            Brand Kits & Profiles
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsSavingBrandKit(!isSavingBrandKit)}
+            className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 transition cursor-pointer font-medium"
+          >
+            <BookmarkPlus className="w-3 h-3" />
+            <span>{isSavingBrandKit ? 'Cancel' : 'Save As Brand Kit'}</span>
+          </button>
+        </div>
+
+        {/* Save Kit Inline Form */}
+        {isSavingBrandKit && (
+          <form onSubmit={handleSaveCurrentAsBrandKit} className="mb-3 p-3 rounded-xl bg-slate-950/70 border border-cyan-500/30 space-y-2">
+            <p className="text-[11px] text-slate-300 font-medium">Save current colors, pattern geometry, and logo as a reusable Brand Kit:</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Brand Name (e.g., Acme Blue)"
+                value={brandKitNameInput}
+                onChange={(e) => setBrandKitNameInput(e.target.value)}
+                className="flex-1 px-3 py-1.5 rounded-lg text-xs bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-cyan-400"
+                autoFocus
+              />
+              <button
+                type="submit"
+                disabled={!brandKitNameInput.trim()}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 disabled:opacity-50 transition cursor-pointer flex items-center gap-1"
+              >
+                <Check className="w-3 h-3" />
+                <span>Save</span>
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Brand Kit Chips */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {brandKits.map((kit) => {
+            const isSelected = activeBrandKitId === kit.id;
+            return (
+              <button
+                key={kit.id}
+                type="button"
+                onClick={() => handleApplyBrandKit(kit)}
+                className={`relative flex items-center gap-2 p-2 rounded-xl border text-left text-xs transition cursor-pointer ${
+                  isSelected
+                    ? 'border-cyan-400 bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-400/40 font-semibold'
+                    : theme === 'dark'
+                    ? 'border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex -space-x-1 shrink-0">
+                  <div
+                    className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-xs"
+                    style={{ backgroundColor: kit.dotColor }}
+                  />
+                  <div
+                    className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-xs"
+                    style={{ backgroundColor: kit.cornerSquareColor }}
+                  />
+                </div>
+                <div className="truncate flex-1">
+                  <span className="block font-medium truncate text-[11px]">{kit.name}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Preset Selector */}
       <div className={sectionCardClass}>
         <div className="flex items-center justify-between mb-2.5">
@@ -342,6 +478,41 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
               </div>
               <p className="text-[11px] text-slate-500">Processed locally inside your browser</p>
             </button>
+
+            {/* Quick Brand Icon Library */}
+            <div className="mt-2.5">
+              <p className="text-[11px] font-medium text-slate-400 mb-1.5">Or choose a sample brand emblem:</p>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[
+                  {
+                    name: 'NOVA Hex',
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 90,25 90,75 50,95 10,75 10,25' fill='%2306b6d4' stroke='%23ffffff' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='18' fill='%23ffffff'/%3E%3C/svg%3E",
+                  },
+                  {
+                    name: 'Shield',
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,8 L85,25 L85,55 C85,75 50,92 50,92 C50,92 15,75 15,55 L15,25 Z' fill='%2310b981' stroke='%23ffffff' stroke-width='6'/%3E%3Cpath d='M35,50 L45,60 L65,40' fill='none' stroke='%23ffffff' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E",
+                  },
+                  {
+                    name: 'Star',
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36' fill='%23f59e0b' stroke='%23ffffff' stroke-width='6'/%3E%3C/svg%3E",
+                  },
+                  {
+                    name: 'Zap',
+                    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%238b5cf6' stroke='%23ffffff' stroke-width='6'/%3E%3Cpolygon points='52,15 28,52 48,52 44,85 72,48 52,48' fill='%23ffffff'/%3E%3C/svg%3E",
+                  },
+                ].map((item) => (
+                  <button
+                    key={item.name}
+                    type="button"
+                    onClick={() => onChange({ ...styleConfig, logoUrl: item.url, errorCorrection: 'H' })}
+                    className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-900/60 border border-slate-800 hover:border-cyan-400/50 transition cursor-pointer text-left"
+                  >
+                    <img src={item.url} alt={item.name} className="w-5 h-5 object-contain shrink-0" />
+                    <span className="text-[10px] text-slate-300 truncate">{item.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-3">

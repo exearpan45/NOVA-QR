@@ -22,12 +22,42 @@ export type CornerSquareType = 'dot' | 'square' | 'extra-rounded';
 export type CornerDotType = 'dot' | 'square';
 export type ErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H';
 
+export interface QRGradientConfig {
+  enabled: boolean;
+  type: 'linear' | 'radial';
+  rotation: number; // 0 to 360
+  colorStops: { offset: number; color: string }[];
+}
+
+export type QRFrameType =
+  | 'none'
+  | 'scan-me-bottom'
+  | 'scan-me-top'
+  | 'polaroid'
+  | 'balloon'
+  | 'ticket'
+  | 'phone'
+  | 'pill';
+
+export interface QRDesignerConfig {
+  frameType: QRFrameType;
+  frameText: string;
+  frameSubtext?: string;
+  frameBgColor: string;
+  frameTextColor: string;
+  frameAccentColor: string;
+  showIcon: boolean;
+}
+
 export interface QRStyleConfig {
   fgColor: string;
   bgColor: string;
   dotType: DotType;
   cornerSquareType: CornerSquareType;
   cornerDotType: CornerDotType;
+  cornerSquareColor?: string;
+  cornerDotColor?: string;
+  gradient?: QRGradientConfig;
   errorCorrection: ErrorCorrectionLevel;
   margin: number;
   size: number;
@@ -74,10 +104,15 @@ export interface AppSettings {
 
 export type NavTab =
   | 'generator'
+  | 'designer'
   | 'scanner'
+  | 'dynamic'
+  | 'bio'
+  | 'analytics'
   | 'history'
   | 'favorites'
   | 'settings'
+  | 'profile'
   | 'help'
   | 'about';
 
@@ -86,6 +121,82 @@ export interface ToastMessage {
   title: string;
   description?: string;
   type?: 'success' | 'info' | 'error' | 'warning';
+}
+
+// Brand Profile Kit
+export interface BrandKit {
+  id: string;
+  name: string;
+  logoUrl?: string;
+  dotColor: string;
+  dotType: DotType;
+  cornerSquareColor: string;
+  cornerSquareType: CornerSquareType;
+  cornerDotColor: string;
+  cornerDotType: CornerDotType;
+  backgroundColor: string;
+  errorCorrection: ErrorCorrectionLevel;
+  isDefault?: boolean;
+  createdAt: string;
+}
+
+// Dynamic Editable QR Codes
+export interface DynamicQRCode {
+  id: string;
+  slug: string;
+  title: string;
+  destinationUrl: string;
+  description?: string;
+  category?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  totalScans: number;
+  lastScannedAt?: string;
+  customQrStyle?: QRStyleConfig;
+}
+
+// Scan Event for Analytics
+export interface ScanEvent {
+  id: string;
+  dynamicCodeId: string;
+  codeTitle: string;
+  timestamp: string;
+  deviceType: 'iOS' | 'Android' | 'Desktop' | 'Other';
+  browser: string;
+  country: string;
+  city: string;
+}
+
+// vCard / Link-in-Bio Digital Landing Page
+export interface BioCustomLink {
+  id: string;
+  title: string;
+  url: string;
+  icon?: string;
+  highlight?: boolean;
+}
+
+export interface LinkInBioProfile {
+  id: string;
+  slug: string;
+  name: string;
+  title: string;
+  company?: string;
+  bio: string;
+  avatarUrl?: string;
+  theme: 'cyan' | 'purple' | 'emerald' | 'amber' | 'sunset' | 'dark';
+  phone?: string;
+  email?: string;
+  whatsapp?: string;
+  website?: string;
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
+  instagram?: string;
+  facebook?: string;
+  customLinks: BioCustomLink[];
+  updatedAt: string;
 }
 
 // Category Specific Inputs

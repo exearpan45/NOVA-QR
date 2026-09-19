@@ -4,7 +4,7 @@ import {
   Github,
   Globe,
   Mail,
-  Linkedin,
+  Instagram,
   Shield,
   Zap,
   Cpu,
@@ -83,44 +83,36 @@ export const AboutView: React.FC<AboutViewProps> = ({ theme }) => {
               “Arpan Goswami is an aspiring web developer interested in technology, science, AI, and building useful digital tools.”
             </p>
 
-            {/* Social & Portfolio Links */}
+            {/* Social & Contact Links */}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-4">
               <a
-                href="https://arpangoswami.dev"
+                href="https://github.com/exearpan45"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition hover:text-white"
+                title="Visit GitHub Profile"
               >
-                <Globe className="w-3.5 h-3.5" />
-                <span>Portfolio</span>
-                <ExternalLink className="w-3 h-3 ml-0.5 opacity-60" />
-              </a>
-
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition"
-              >
-                <Github className="w-3.5 h-3.5" />
+                <Github className="w-3.5 h-3.5 text-cyan-400" />
                 <span>GitHub</span>
               </a>
 
               <a
-                href="https://linkedin.com"
+                href="https://instagram.com/_arpan.x"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition hover:text-pink-400"
+                title="Visit Instagram Profile"
               >
-                <Linkedin className="w-3.5 h-3.5" />
-                <span>LinkedIn</span>
+                <Instagram className="w-3.5 h-3.5 text-pink-400" />
+                <span>Instagram</span>
               </a>
 
               <a
-                href="mailto:contact@arpangoswami.dev"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition"
+                href="mailto:exe.arpan45@gmail.com"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition hover:text-cyan-300"
+                title="Send Email"
               >
-                <Mail className="w-3.5 h-3.5" />
+                <Mail className="w-3.5 h-3.5 text-amber-400" />
                 <span>Email</span>
               </a>
             </div>

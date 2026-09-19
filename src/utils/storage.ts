@@ -70,6 +70,14 @@ export function getStoredHistory(): QRHistoryItem[] {
   return [];
 }
 
+export function setStoredHistory(items: QRHistoryItem[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(items));
+  } catch {
+    // ignore
+  }
+}
+
 export function saveHistoryItem(item: Omit<QRHistoryItem, 'id' | 'timestamp' | 'isFavorite'>): QRHistoryItem {
   const history = getStoredHistory();
   // Check if identical content exists recently, remove to place at top

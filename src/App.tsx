@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { User } from '@supabase/supabase-js';
+import { supabase } from './lib/supabase';
 import {
   AppSettings,
   NavTab,
@@ -25,14 +27,24 @@ import { GeneratorView } from './components/GeneratorView';
 import { ScannerView } from './components/ScannerView';
 import { HistoryAndFavoritesView } from './components/HistoryAndFavoritesView';
 import { SettingsView } from './components/SettingsView';
+import { ProfileView } from './components/ProfileView';
+import { DynamicQRView } from './components/DynamicQRView';
+import { AnalyticsView } from './components/AnalyticsView';
+import { LinkInBioView } from './components/LinkInBioView';
 import { HelpView } from './components/HelpView';
 import { AboutView } from './components/AboutView';
 import { ToastContainer } from './components/ToastContainer';
+import { AuthModal } from './components/AuthModal';
+import { CustomQRDesigner } from './components/CustomQRDesigner';
+import { syncHistoryWithCloud } from './utils/cloudSync';
 import {
   QrCode,
   ScanLine,
   History,
   Star,
+  Link2,
+  TrendingUp,
+  Smartphone,
 } from 'lucide-react';
 
 export default function App() {
@@ -42,6 +54,72 @@ export default function App() {
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [historyItems, setHistoryItems] = useState<QRHistoryItem[]>([]);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [analyticsTargetCodeId, setAnalyticsTargetCodeId] = useState<string | undefined>(undefined);
+
+  // Supabase Authentication state
+  const [user, setUser] = useState<User | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+
+  // Supabase session listener & automatic cloud history sync
+  useEffect(() => {
+    // 1. Fetch initial session and sync history if logged in
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        try {
+          const syncResult = await syncHistoryWithCloud(session.user);
+          if (syncResult.success && syncResult.mergedItems) {
+            setHistoryItems(syncResult.mergedItems);
+          }
+        } catch (err) {
+          console.error('Initial history sync error:', err);
+        }
+      }
+    });
+
+    // 2. Subscribe to auth changes (sign in, sign out, token refresh)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
+        try {
+          const syncResult = await syncHistoryWithCloud(session.user);
+          if (syncResult.success && syncResult.mergedItems) {
+            setHistoryItems(syncResult.mergedItems);
+          }
+          addToast('History Synchronized', 'Your cloud & local QR history is now in sync across devices.', 'success');
+        } catch (err) {
+          console.error('Auth change history sync error:', err);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Trigger login/signup popup modal when a visitor scrolls down
+  useEffect(() => {
+    if (user || showSplash) return;
+
+    const alreadyPrompted = sessionStorage.getItem('nova_scroll_auth_prompted') === 'true';
+    if (alreadyPrompted) return;
+
+    const handleScroll = () => {
+      if (window.scrollY > 160) {
+        setAuthModalMode('signup');
+        setAuthModalOpen(true);
+        sessionStorage.setItem('nova_scroll_auth_prompted', 'true');
+        window.removeEventListener('scroll', handleScroll);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [user, showSplash]);
 
   // Initial load
   useEffect(() => {
@@ -157,6 +235,22 @@ export default function App() {
     addToast('Loaded in Generator', item.title, 'info');
   };
 
+  const handleOpenAuth = (mode: 'login' | 'signup' = 'login') => {
+    setAuthModalMode(mode);
+    setAuthModalOpen(true);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+      addToast('Signed Out', 'You have been successfully logged out', 'info');
+    } catch (err) {
+      addToast('Sign Out Error', (err as Error).message || 'Failed to sign out', 'error');
+    }
+  };
+
   const favoritesCount = historyItems.filter((i) => i.isFavorite).length;
 
   return (
@@ -183,6 +277,9 @@ export default function App() {
         theme={theme}
         onToggleTheme={handleToggleTheme}
         favoritesCount={favoritesCount}
+        user={user}
+        onOpenAuth={handleOpenAuth}
+        onSignOut={handleSignOut}
       />
 
       {/* Main Content Area */}
@@ -192,6 +289,49 @@ export default function App() {
             theme={theme}
             onAddToast={addToast}
             onRefreshHistory={handleRefreshHistory}
+          />
+        )}
+
+        {currentTab === 'designer' && (
+          <CustomQRDesigner
+            theme={theme}
+            onAddToast={addToast}
+            onRefreshHistory={handleRefreshHistory}
+            onSyncTrigger={() => {
+              if (user) {
+                syncHistoryWithCloud(user).then((synced) => {
+                  if (synced.success && synced.mergedItems) {
+                    setHistoryItems(synced.mergedItems);
+                  }
+                });
+              }
+            }}
+          />
+        )}
+
+        {currentTab === 'dynamic' && (
+          <DynamicQRView
+            theme={theme}
+            onAddToast={addToast}
+            onNavigateToAnalytics={(codeId) => {
+              setAnalyticsTargetCodeId(codeId);
+              setCurrentTab('analytics');
+            }}
+          />
+        )}
+
+        {currentTab === 'analytics' && (
+          <AnalyticsView
+            theme={theme}
+            onAddToast={addToast}
+            selectedCodeId={analyticsTargetCodeId}
+          />
+        )}
+
+        {currentTab === 'bio' && (
+          <LinkInBioView
+            theme={theme}
+            onAddToast={addToast}
           />
         )}
 
@@ -241,6 +381,22 @@ export default function App() {
             onResetAllSettings={handleResetAll}
             theme={theme}
             onAddToast={addToast}
+            user={user}
+            onOpenAuth={handleOpenAuth}
+            onSignOut={handleSignOut}
+            onNavigateToProfile={() => setCurrentTab('profile')}
+          />
+        )}
+
+        {currentTab === 'profile' && (
+          <ProfileView
+            user={user}
+            historyItems={historyItems}
+            theme={theme}
+            onOpenAuth={handleOpenAuth}
+            onSignOut={handleSignOut}
+            onAddToast={addToast}
+            onNavigateToTab={(tab) => setCurrentTab(tab)}
           />
         )}
 
@@ -261,47 +417,63 @@ export default function App() {
       }`}>
         <button
           onClick={() => setCurrentTab('generator')}
-          className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
             currentTab === 'generator' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <QrCode className="w-5 h-5" />
+          <QrCode className="w-4 h-4" />
           <span className="text-[10px]">Create</span>
         </button>
 
         <button
-          onClick={() => setCurrentTab('scanner')}
-          className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition cursor-pointer ${
-            currentTab === 'scanner' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          onClick={() => setCurrentTab('dynamic')}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
+            currentTab === 'dynamic' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <ScanLine className="w-5 h-5" />
-          <span className="text-[10px]">Scan</span>
+          <Link2 className="w-4 h-4" />
+          <span className="text-[10px]">Dynamic</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentTab('analytics')}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
+            currentTab === 'analytics' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <TrendingUp className="w-4 h-4" />
+          <span className="text-[10px]">Analytics</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentTab('bio')}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
+            currentTab === 'bio' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Smartphone className="w-4 h-4" />
+          <span className="text-[10px]">Bio</span>
         </button>
 
         <button
           onClick={() => setCurrentTab('history')}
-          className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
             currentTab === 'history' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <History className="w-5 h-5" />
+          <History className="w-4 h-4" />
           <span className="text-[10px]">History</span>
         </button>
-
-        <button
-          onClick={() => setCurrentTab('favorites')}
-          className={`relative flex flex-col items-center gap-0.5 p-2 rounded-xl transition cursor-pointer ${
-            currentTab === 'favorites' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Star className={`w-5 h-5 ${currentTab === 'favorites' ? 'fill-amber-400' : ''}`} />
-          <span className="text-[10px]">Favorites</span>
-          {favoritesCount > 0 && (
-            <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-amber-400" />
-          )}
-        </button>
       </div>
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialMode={authModalMode}
+        theme={theme}
+        onSuccess={(msg) => addToast('Account', msg, 'success')}
+      />
 
       {/* Footer */}
       <Footer onTabChange={setCurrentTab} theme={theme} />

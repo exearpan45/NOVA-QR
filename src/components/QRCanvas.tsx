@@ -21,6 +21,18 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
 
     useEffect(() => {
       if (!qrCodeRef.current) {
+        const dotsOptions: any = {
+          color: styleConfig.fgColor,
+          type: styleConfig.dotType,
+        };
+        if (styleConfig.gradient?.enabled && styleConfig.gradient.colorStops.length >= 2) {
+          dotsOptions.gradient = {
+            type: styleConfig.gradient.type,
+            rotation: (styleConfig.gradient.rotation * Math.PI) / 180,
+            colorStops: styleConfig.gradient.colorStops,
+          };
+        }
+
         qrCodeRef.current = new QRCodeStyling({
           width: 320,
           height: 320,
@@ -37,19 +49,16 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
             margin: 4,
             crossOrigin: 'anonymous',
           },
-          dotsOptions: {
-            color: styleConfig.fgColor,
-            type: styleConfig.dotType,
-          },
+          dotsOptions,
           backgroundOptions: {
             color: styleConfig.bgColor,
           },
           cornersSquareOptions: {
-            color: styleConfig.fgColor,
+            color: styleConfig.cornerSquareColor || styleConfig.fgColor,
             type: styleConfig.cornerSquareType,
           },
           cornersDotOptions: {
-            color: styleConfig.fgColor,
+            color: styleConfig.cornerDotColor || styleConfig.fgColor,
             type: styleConfig.cornerDotType,
           },
         });
@@ -59,6 +68,18 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
           qrCodeRef.current.append(containerRef.current);
         }
       } else {
+        const dotsOptions: any = {
+          color: styleConfig.fgColor,
+          type: styleConfig.dotType,
+        };
+        if (styleConfig.gradient?.enabled && styleConfig.gradient.colorStops.length >= 2) {
+          dotsOptions.gradient = {
+            type: styleConfig.gradient.type,
+            rotation: (styleConfig.gradient.rotation * Math.PI) / 180,
+            colorStops: styleConfig.gradient.colorStops,
+          };
+        }
+
         qrCodeRef.current.update({
           data: content || 'https://nova-qr.app',
           image: styleConfig.logoUrl || undefined,
@@ -71,19 +92,16 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
             imageSize: styleConfig.logoSize ?? 0.25,
             margin: 4,
           },
-          dotsOptions: {
-            color: styleConfig.fgColor,
-            type: styleConfig.dotType,
-          },
+          dotsOptions,
           backgroundOptions: {
             color: styleConfig.bgColor,
           },
           cornersSquareOptions: {
-            color: styleConfig.fgColor,
+            color: styleConfig.cornerSquareColor || styleConfig.fgColor,
             type: styleConfig.cornerSquareType,
           },
           cornersDotOptions: {
-            color: styleConfig.fgColor,
+            color: styleConfig.cornerDotColor || styleConfig.fgColor,
             type: styleConfig.cornerDotType,
           },
         });
@@ -97,6 +115,18 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
         if (!qrCodeRef.current) return;
 
         // Temporarily render at desired high resolution for crystal clear download
+        const tempDotsOptions: any = {
+          color: styleConfig.fgColor,
+          type: styleConfig.dotType,
+        };
+        if (styleConfig.gradient?.enabled && styleConfig.gradient.colorStops.length >= 2) {
+          tempDotsOptions.gradient = {
+            type: styleConfig.gradient.type,
+            rotation: (styleConfig.gradient.rotation * Math.PI) / 180,
+            colorStops: styleConfig.gradient.colorStops,
+          };
+        }
+
         const tempQR = new QRCodeStyling({
           width: resolution,
           height: resolution,
@@ -112,19 +142,16 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
             imageSize: styleConfig.logoSize ?? 0.25,
             margin: Math.round(4 * (resolution / 320)),
           },
-          dotsOptions: {
-            color: styleConfig.fgColor,
-            type: styleConfig.dotType,
-          },
+          dotsOptions: tempDotsOptions,
           backgroundOptions: {
             color: styleConfig.bgColor,
           },
           cornersSquareOptions: {
-            color: styleConfig.fgColor,
+            color: styleConfig.cornerSquareColor || styleConfig.fgColor,
             type: styleConfig.cornerSquareType,
           },
           cornersDotOptions: {
-            color: styleConfig.fgColor,
+            color: styleConfig.cornerDotColor || styleConfig.fgColor,
             type: styleConfig.cornerDotType,
           },
         });

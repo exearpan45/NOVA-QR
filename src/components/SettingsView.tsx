@@ -10,7 +10,14 @@ import {
   Shield,
   AlertTriangle,
   Sparkles,
+  User as UserIcon,
+  LogIn,
+  LogOut,
+  UserPlus,
+  ShieldCheck,
+  Database,
 } from 'lucide-react';
+import { User } from '@supabase/supabase-js';
 import { AppSettings, StylePresetKey, ErrorCorrectionLevel } from '../types';
 import { STYLE_PRESETS } from '../utils/qrPresets';
 
@@ -22,6 +29,10 @@ interface SettingsViewProps {
   onResetAllSettings: () => void;
   theme: 'dark' | 'light';
   onAddToast: (title: string, description?: string, type?: 'success' | 'info' | 'error' | 'warning') => void;
+  user: User | null;
+  onOpenAuth: (mode?: 'login' | 'signup') => void;
+  onSignOut: () => Promise<void>;
+  onNavigateToProfile?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -32,6 +43,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onResetAllSettings,
   theme,
   onAddToast,
+  user,
+  onOpenAuth,
+  onSignOut,
+  onNavigateToProfile,
 }) => {
   const [modalAction, setModalAction] = useState<'history' | 'favorites' | 'reset' | null>(null);
 
@@ -60,6 +75,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
   const labelClass = `text-xs font-bold uppercase tracking-wider text-slate-400 block mb-3 flex items-center gap-2`;
 
+  const userDisplayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.user_name ||
+    user?.email?.split('@')[0] ||
+    user?.phone ||
+    'Account';
+
+  const userInitials = (userDisplayName || 'U')
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fadeIn">
       <div>
@@ -68,8 +94,90 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <span>Application Settings</span>
         </h1>
         <p className="mt-1 text-sm text-slate-400">
-          Personalize appearance, default export formats, and manage local storage.
+          Personalize appearance, manage your account, and configure QR defaults.
         </p>
+      </div>
+
+      {/* 0. Account & Authentication */}
+      <div className={sectionCardClass}>
+        <span className={labelClass}>
+          <Database className="w-4 h-4 text-cyan-400" />
+          Account & Cloud Sync
+        </span>
+
+        {user ? (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-950/50 border border-slate-800">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black text-base shadow-md">
+                {userInitials}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white">{userDisplayName}</h3>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3" />
+                    Cloud Sync Active
+                  </span>
+                </div>
+                <p className="text-xs font-mono text-slate-400 mt-0.5">{user.email || user.phone}</p>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Account ID: {user.id.slice(0, 16)}...
+                </p>
+              </div>
+            </div>
+
+            <div className="flex sm:flex-col gap-2 shrink-0">
+              {onNavigateToProfile && (
+                <button
+                  onClick={onNavigateToProfile}
+                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition cursor-pointer"
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Profile & Password</span>
+                </button>
+              )}
+              <button
+                onClick={onSignOut}
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold transition cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-5 rounded-2xl bg-slate-950/50 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-wider mb-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>NOVA Cloud Account</span>
+              </div>
+              <h3 className="text-sm font-bold text-white">
+                Log in or create your account
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5 max-w-md">
+                Authenticate with your email and password to safely backup and access your codes and favorites across devices.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => onOpenAuth('login')}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-200 hover:text-white hover:border-slate-700 text-xs font-semibold transition cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Log In</span>
+              </button>
+              <button
+                onClick={() => onOpenAuth('signup')}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Sign Up</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 1. Appearance */}
