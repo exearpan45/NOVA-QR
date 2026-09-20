@@ -72,7 +72,9 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
       [onErrorStateChange]
     );
 
-    // Perform generation and optional API validation
+    // Generate the QR code locally in the browser.
+    // GitHub Pages is static hosting, so POST /api/generate-qr cannot be used there.
+    // Keeping generation client-side makes NOVA QR work reliably offline and on GitHub Pages.
     const executeGeneration = useCallback(
       async (isManualRetry = false) => {
         if (isManualRetry) {
@@ -80,7 +82,6 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
           retryCountRef.current += 1;
         }
 
-        // Clear previous countdowns
         if (countdownIntervalRef.current) {
           clearInterval(countdownIntervalRef.current);
           countdownIntervalRef.current = null;
@@ -88,85 +89,20 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
         setAutoRetryCountdown(null);
 
         try {
-          // 1. API validation & generation check (unless forced to offline local mode)
-          if (!forceOfflineMode) {
-            try {
-              const res = await fetch('/api/generate-qr', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  content: content || 'https://nova-qr.app',
-                  errorCorrection: styleConfig.logoUrl ? 'H' : (styleConfig.errorCorrection || 'Q'),
-                  simulateError: simulateApiError,
-                }),
-              });
-
-              if (!res.ok) {
-                const errData = await res.json().catch(() => ({}));
-                const newErr: QRErrorState = {
-                  hasError: true,
-                  message:
-                    errData.error ||
-                    (res.status === 503
-                      ? 'The QR generation API service is temporarily unavailable.'
-                      : `API request returned status error ${res.status}`),
-                  code: errData.code || `HTTP_${res.status}`,
-                  canRetry: errData.canRetry !== false,
-                  retryCount: retryCountRef.current,
-                  suggestedEC: errData.suggestedEC,
-                };
-                updateErrorState(newErr);
-                setIsRetrying(false);
-
-                // Start auto-retry countdown if retryable and retry count < 3
-                if (newErr.canRetry && retryCountRef.current < 3) {
-                  let secondsLeft = 3;
-                  setAutoRetryCountdown(secondsLeft);
-                  countdownIntervalRef.current = setInterval(() => {
-                    secondsLeft -= 1;
-                    if (secondsLeft <= 0) {
-                      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-                      setAutoRetryCountdown(null);
-                      executeGeneration(true);
-                    } else {
-                      setAutoRetryCountdown(secondsLeft);
-                    }
-                  }, 1000);
-                }
-                return;
-              }
-            } catch (networkErr: any) {
-              // Network connectivity issue to the API
-              const newErr: QRErrorState = {
-                hasError: true,
-                message:
-                  'Unable to connect to the QR generation API (Network Offline or Timed Out). Your content has been preserved.',
-                code: 'NETWORK_ERROR',
-                canRetry: true,
-                retryCount: retryCountRef.current,
-              };
-              updateErrorState(newErr);
-              setIsRetrying(false);
-
-              if (retryCountRef.current < 2) {
-                let secondsLeft = 3;
-                setAutoRetryCountdown(secondsLeft);
-                countdownIntervalRef.current = setInterval(() => {
-                  secondsLeft -= 1;
-                  if (secondsLeft <= 0) {
-                    if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-                    setAutoRetryCountdown(null);
-                    executeGeneration(true);
-                  } else {
-                    setAutoRetryCountdown(secondsLeft);
-                  }
-                }, 1000);
-              }
-              return;
-            }
+          // Keep the existing "Test Error State" feature without making a network request.
+          if (simulateApiError) {
+            const newErr: QRErrorState = {
+              hasError: true,
+              message: 'Simulated QR generation failure for testing the retry UI.',
+              code: 'SIMULATED_FAILURE',
+              canRetry: true,
+              retryCount: retryCountRef.current,
+            };
+            updateErrorState(newErr);
+            setIsRetrying(false);
+            return;
           }
 
-          // 2. Successful API validation -> proceed with client QR rendering
           updateErrorState(null);
           retryCountRef.current = 0;
 
@@ -236,7 +172,7 @@ export const QRCanvas = React.forwardRef<QRCanvasRef, QRCanvasProps>(
           setIsRetrying(false);
         }
       },
-      [content, styleConfig, simulateApiError, forceOfflineMode, onReady, updateErrorState]
+      [content, styleConfig, simulateApiError, onReady, updateErrorState]
     );
 
     // Debounce execution
