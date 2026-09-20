@@ -49,7 +49,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setMode(initialMode);
       setErrorMessage(null);
       setInfoMessage(null);
-      setOtpCode("");
     }
   }, [isOpen, initialMode]);
 
