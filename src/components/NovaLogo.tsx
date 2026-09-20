@@ -84,13 +84,13 @@ export const NovaLogo: React.FC<NovaLogoProps> = ({
       {/* Brand Text */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 font-bold tracking-tight">
-          <span className={`${dim.text} text-slate-100 font-extrabold tracking-wider`}>NOVA</span>
-          <span className={`${dim.text} bg-gradient-to-r from-cyan-400 via-sky-400 to-purple-400 bg-clip-text text-transparent font-black`}>
+          <span className={`${dim.text} text-slate-900 dark:text-slate-100 font-extrabold tracking-wider`}>NOVA</span>
+          <span className={`${dim.text} bg-gradient-to-r from-cyan-500 via-sky-500 to-purple-500 dark:from-cyan-400 dark:via-sky-400 dark:to-purple-400 bg-clip-text text-transparent font-black`}>
             QR
           </span>
         </div>
         {showTagline && (
-          <span className="text-xs font-medium text-cyan-400/90 tracking-widest uppercase">
+          <span className="text-xs font-semibold text-cyan-700 dark:text-cyan-400/90 tracking-widest uppercase">
             Create. Scan. Share.
           </span>
         )}

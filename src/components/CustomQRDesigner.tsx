@@ -24,6 +24,7 @@ import {
   Tag,
   Layers,
   ArrowRight,
+  ArrowDown,
   ExternalLink,
   MessageSquare,
   HelpCircle,
@@ -520,25 +521,44 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
     onAddToast('Link Copied', content, 'info');
   };
 
+  const scrollToPreview = () => {
+    const el = document.getElementById('designer-preview-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const isDark = theme === 'dark';
 
   return (
     <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 py-6 space-y-6 animate-fadeIn">
       {/* Studio Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b ${
+        isDark ? 'border-slate-800/80' : 'border-slate-200'
+      }`}>
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/10 text-cyan-400 border border-cyan-500/30 shadow-xs">
+            <div className={`p-2.5 rounded-xl border shadow-xs ${
+              isDark
+                ? 'bg-gradient-to-tr from-cyan-500/20 to-blue-500/10 text-cyan-400 border-cyan-500/30'
+                : 'bg-cyan-50 text-cyan-700 border-cyan-200'
+            }`}>
               <Palette className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+              <h1 className={`text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
                 Custom QR Designer Studio
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${
+                  isDark
+                    ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+                    : 'bg-cyan-100 text-cyan-800 border-cyan-200'
+                }`}>
                   Studio Pro
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 Design custom "SCAN ME" frames, multi-color gradients, ticket stubs, and brand stickers.
               </p>
             </div>
@@ -548,17 +568,38 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
         {/* Quick Top Actions */}
         <div className="flex items-center gap-2 flex-wrap">
           <button
+            type="button"
+            onClick={scrollToPreview}
+            className={`lg:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition cursor-pointer active:scale-95 ${
+              isDark
+                ? 'bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border-cyan-400/40'
+                : 'bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border-cyan-300'
+            }`}
+          >
+            <QrCode className="w-3.5 h-3.5" />
+            <span>View QR Preview</span>
+            <ArrowDown className="w-3.5 h-3.5" />
+          </button>
+          <button
             onClick={handleSaveToHistory}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition cursor-pointer border border-slate-700"
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
+              isDark
+                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-xs'
+            }`}
           >
             <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
             <span>Save to History</span>
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition cursor-pointer border border-slate-700"
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
+              isDark
+                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-xs'
+            }`}
           >
-            <Printer className="w-3.5 h-3.5 text-slate-400" />
+            <Printer className={`w-3.5 h-3.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
             <span>Print Badge</span>
           </button>
           <button
@@ -577,13 +618,17 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
         {/* Left Side: Creative Customizer Suite */}
         <div className="lg:col-span-7 space-y-4">
           {/* Navigation Pill Tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-900/80 border border-slate-800 overflow-x-auto scrollbar-none">
+          <div className={`flex items-center gap-1 p-1 rounded-2xl border overflow-x-auto scrollbar-none shadow-xs ${
+            isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-100 border-slate-200'
+          }`}>
             <button
               onClick={() => setActiveStudioTab('frames')}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                 activeStudioTab === 'frames'
                   ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : isDark
+                  ? 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Tag className="w-3.5 h-3.5" />
@@ -595,7 +640,9 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                 activeStudioTab === 'templates'
                   ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : isDark
+                  ? 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -607,7 +654,9 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                 activeStudioTab === 'patterns'
                   ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : isDark
+                  ? 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Sliders className="w-3.5 h-3.5" />
@@ -619,7 +668,9 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                 activeStudioTab === 'stickers'
                   ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : isDark
+                  ? 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <ImageIcon className="w-3.5 h-3.5" />
@@ -631,7 +682,9 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                 activeStudioTab === 'payload'
                   ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  : isDark
+                  ? 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Link className="w-3.5 h-3.5" />
@@ -641,9 +694,13 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
 
           {/* TAB 1: FRAMES & BADGES */}
           {activeStudioTab === 'frames' && (
-            <div className="p-4 sm:p-5 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-5">
+            <div className={`p-4 sm:p-5 rounded-3xl border shadow-xs space-y-5 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-2.5 ${
+                  isDark ? 'text-slate-300' : 'text-slate-700'
+                }`}>
                   Select Frame Layout
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -668,29 +725,43 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                       }
                       className={`p-3 rounded-2xl border text-left transition cursor-pointer ${
                         designerConfig.frameType === frm.id
-                          ? 'border-cyan-400 bg-cyan-500/10 ring-1 ring-cyan-400'
-                          : 'border-slate-800 bg-slate-950/40 hover:border-slate-700'
+                          ? isDark
+                            ? 'border-cyan-400 bg-cyan-500/10 ring-1 ring-cyan-400'
+                            : 'border-cyan-600 bg-cyan-50 ring-1 ring-cyan-600/40'
+                          : isDark
+                          ? 'border-slate-800 bg-slate-950/40 hover:border-slate-700'
+                          : 'border-slate-200 bg-slate-50 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-slate-200">{frm.label}</span>
+                        <span className={`text-xs font-bold ${
+                          designerConfig.frameType === frm.id && !isDark
+                            ? 'text-cyan-950'
+                            : isDark
+                            ? 'text-slate-200'
+                            : 'text-slate-800'
+                        }`}>{frm.label}</span>
                         {designerConfig.frameType === frm.id && (
                           <div className="w-3.5 h-3.5 rounded-full bg-cyan-400 flex items-center justify-center text-slate-950">
                             <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </div>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-400">{frm.desc}</p>
+                      <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{frm.desc}</p>
                     </button>
                   ))}
                 </div>
               </div>
 
               {designerConfig.frameType !== 'none' && (
-                <div className="space-y-4 pt-2 border-t border-slate-800/80">
+                <div className={`space-y-4 pt-2 border-t ${
+                  isDark ? 'border-slate-800/80' : 'border-slate-200'
+                }`}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      <label className={`block text-xs font-semibold mb-1.5 ${
+                        isDark ? 'text-slate-300' : 'text-slate-700'
+                      }`}>
                         Primary CTA Text
                       </label>
                       <input
@@ -700,12 +771,18 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                           setDesignerConfig((prev) => ({ ...prev, frameText: e.target.value }))
                         }
                         placeholder="e.g. SCAN ME, VISIT MENU, CONNECT"
-                        className="w-full px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-slate-950/80 border border-slate-800 text-slate-100 focus:border-cyan-400 outline-none uppercase font-bold"
+                        className={`w-full px-3.5 py-2 rounded-xl text-xs sm:text-sm border outline-none uppercase font-bold ${
+                          isDark
+                            ? 'bg-slate-950/80 border-slate-800 text-slate-100 focus:border-cyan-400'
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                        }`}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      <label className={`block text-xs font-semibold mb-1.5 ${
+                        isDark ? 'text-slate-300' : 'text-slate-700'
+                      }`}>
                         Secondary Instruction / Caption
                       </label>
                       <input
@@ -715,7 +792,11 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                           setDesignerConfig((prev) => ({ ...prev, frameSubtext: e.target.value }))
                         }
                         placeholder="e.g. Point phone camera & tap"
-                        className="w-full px-3.5 py-2 rounded-xl text-xs sm:text-sm bg-slate-950/80 border border-slate-800 text-slate-100 focus:border-cyan-400 outline-none"
+                        className={`w-full px-3.5 py-2 rounded-xl text-xs sm:text-sm border outline-none ${
+                          isDark
+                            ? 'bg-slate-950/80 border-slate-800 text-slate-100 focus:border-cyan-400'
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                        }`}
                       />
                     </div>
                   </div>
@@ -723,10 +804,14 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                   {/* Frame Colors */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                      <label className={`block text-[11px] font-semibold mb-1 ${
+                        isDark ? 'text-slate-400' : 'text-slate-700'
+                      }`}>
                         Frame Background
                       </label>
-                      <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                      <div className={`flex items-center gap-2 p-1.5 rounded-xl border ${
+                        isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-300'
+                      }`}>
                         <input
                           type="color"
                           value={designerConfig.frameBgColor}
@@ -736,15 +821,19 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                           }}
                           className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0"
                         />
-                        <span className="text-xs font-mono text-slate-300">{designerConfig.frameBgColor}</span>
+                        <span className={`text-xs font-mono ${isDark ? 'text-slate-300' : 'text-slate-800 font-medium'}`}>{designerConfig.frameBgColor}</span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                      <label className={`block text-[11px] font-semibold mb-1 ${
+                        isDark ? 'text-slate-400' : 'text-slate-700'
+                      }`}>
                         Frame Text Color
                       </label>
-                      <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                      <div className={`flex items-center gap-2 p-1.5 rounded-xl border ${
+                        isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-300'
+                      }`}>
                         <input
                           type="color"
                           value={designerConfig.frameTextColor}
@@ -753,15 +842,19 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                           }
                           className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0"
                         />
-                        <span className="text-xs font-mono text-slate-300">{designerConfig.frameTextColor}</span>
+                        <span className={`text-xs font-mono ${isDark ? 'text-slate-300' : 'text-slate-800 font-medium'}`}>{designerConfig.frameTextColor}</span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                      <label className={`block text-[11px] font-semibold mb-1 ${
+                        isDark ? 'text-slate-400' : 'text-slate-700'
+                      }`}>
                         Accent / Border Color
                       </label>
-                      <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                      <div className={`flex items-center gap-2 p-1.5 rounded-xl border ${
+                        isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-300'
+                      }`}>
                         <input
                           type="color"
                           value={designerConfig.frameAccentColor}
@@ -770,7 +863,7 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                           }
                           className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0"
                         />
-                        <span className="text-xs font-mono text-slate-300">{designerConfig.frameAccentColor}</span>
+                        <span className={`text-xs font-mono ${isDark ? 'text-slate-300' : 'text-slate-800 font-medium'}`}>{designerConfig.frameAccentColor}</span>
                       </div>
                     </div>
                   </div>
@@ -781,10 +874,14 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
 
           {/* TAB 2: PRO TEMPLATES */}
           {activeStudioTab === 'templates' && (
-            <div className="p-4 sm:p-5 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
+            <div className={`p-4 sm:p-5 rounded-3xl border shadow-xs space-y-4 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
               <div>
-                <h3 className="text-sm font-bold text-white mb-1">1-Click Curated Designer Templates</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  1-Click Curated Designer Templates
+                </h3>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                   Select a professionally configured preset with tuned frames, contrast, and corner accents.
                 </p>
               </div>
@@ -795,28 +892,36 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                     key={tpl.id}
                     type="button"
                     onClick={() => handleApplyTemplate(tpl)}
-                    className="p-4 rounded-2xl bg-gradient-to-br border border-slate-800 hover:border-cyan-500/50 transition cursor-pointer text-left group relative overflow-hidden"
+                    className={`p-4 rounded-2xl border transition cursor-pointer text-left group relative overflow-hidden shadow-xs ${
+                      isDark
+                        ? 'border-slate-800 bg-slate-950/60 hover:border-cyan-500/50'
+                        : 'border-slate-200 bg-slate-50 hover:border-cyan-600'
+                    }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-black text-white group-hover:text-cyan-300 transition">
+                      <span className={`text-xs font-black transition ${
+                        isDark ? 'text-white group-hover:text-cyan-300' : 'text-slate-900 group-hover:text-cyan-700'
+                      }`}>
                         {tpl.name}
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 font-mono">
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono border ${
+                        isDark ? 'bg-white/10 text-slate-300 border-transparent' : 'bg-slate-200 text-slate-800 border-slate-300'
+                      }`}>
                         {tpl.designerConfig.frameType}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 mb-3">{tpl.tagline}</p>
+                    <p className={`text-xs mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{tpl.tagline}</p>
                     <div className="flex items-center gap-2">
                       <div
-                        className="w-4 h-4 rounded-full border border-white/20 shadow-xs"
+                        className="w-4 h-4 rounded-full border border-black/10 dark:border-white/20 shadow-xs"
                         style={{ backgroundColor: tpl.styleConfig.fgColor }}
                       />
                       <div
-                        className="w-4 h-4 rounded-full border border-white/20 shadow-xs"
+                        className="w-4 h-4 rounded-full border border-black/10 dark:border-white/20 shadow-xs"
                         style={{ backgroundColor: tpl.designerConfig.frameAccentColor }}
                       />
                       <div
-                        className="w-4 h-4 rounded-full border border-white/20 shadow-xs"
+                        className="w-4 h-4 rounded-full border border-black/10 dark:border-white/20 shadow-xs"
                         style={{ backgroundColor: tpl.designerConfig.frameBgColor }}
                       />
                     </div>
@@ -828,10 +933,14 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
 
           {/* TAB 3: PATTERNS & GRADIENTS */}
           {activeStudioTab === 'patterns' && (
-            <div className="p-4 sm:p-5 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-5">
+            <div className={`p-4 sm:p-5 rounded-3xl border shadow-xs space-y-5 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
               {/* Dot Shape */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${
+                  isDark ? 'text-slate-300' : 'text-slate-700'
+                }`}>
                   QR Dot Matrix Shape
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -842,8 +951,12 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                       onClick={() => setStyleConfig((prev) => ({ ...prev, dotType: type }))}
                       className={`py-2 px-2.5 rounded-xl text-xs font-semibold border text-center transition cursor-pointer capitalize ${
                         styleConfig.dotType === type
-                          ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400'
-                          : 'border-slate-800 bg-slate-950/40 text-slate-400 hover:text-white'
+                          ? isDark
+                            ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400'
+                            : 'border-cyan-600 bg-cyan-50 text-cyan-900 font-bold ring-1 ring-cyan-600/40'
+                          : isDark
+                          ? 'border-slate-800 bg-slate-950/40 text-slate-400 hover:text-white'
+                          : 'border-slate-200 bg-slate-50 text-slate-700 hover:text-slate-900 hover:bg-slate-100'
                       }`}
                     >
                       {type.replace('-', ' ')}
@@ -853,11 +966,15 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
               </div>
 
               {/* Gradient Mode Toggle */}
-              <div className="pt-3 border-t border-slate-800">
+              <div className={`pt-3 border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <span className="text-xs font-bold text-slate-300">Multi-Color Gradient</span>
-                    <p className="text-[11px] text-slate-400">Add dynamic color blending to the QR matrix</p>
+                    <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
+                      Multi-Color Gradient
+                    </span>
+                    <p className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Add dynamic color blending to the QR matrix
+                    </p>
                   </div>
                   <button
                     type="button"
@@ -876,7 +993,7 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                       }))
                     }
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${
-                      styleConfig.gradient?.enabled ? 'bg-cyan-500' : 'bg-slate-800'
+                      styleConfig.gradient?.enabled ? 'bg-cyan-500' : isDark ? 'bg-slate-800' : 'bg-slate-300'
                     }`}
                   >
                     <span
@@ -888,13 +1005,19 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                 </div>
 
                 {styleConfig.gradient?.enabled && (
-                  <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-3">
+                  <div className={`p-3 rounded-2xl border space-y-3 ${
+                    isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                        <label className={`block text-[11px] font-semibold mb-1 ${
+                          isDark ? 'text-slate-400' : 'text-slate-700'
+                        }`}>
                           Gradient Start Color
                         </label>
-                        <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                        <div className={`flex items-center gap-2 p-1.5 rounded-xl border ${
+                          isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-300 shadow-xs'
+                        }`}>
                           <input
                             type="color"
                             value={styleConfig.gradient.colorStops[0]?.color || styleConfig.fgColor}
@@ -914,17 +1037,21 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                             }}
                             className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0"
                           />
-                          <span className="text-xs font-mono text-slate-200">
+                          <span className={`text-xs font-mono ${isDark ? 'text-slate-200' : 'text-slate-800 font-medium'}`}>
                             {styleConfig.gradient.colorStops[0]?.color}
                           </span>
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                        <label className={`block text-[11px] font-semibold mb-1 ${
+                          isDark ? 'text-slate-400' : 'text-slate-700'
+                        }`}>
                           Gradient End Color
                         </label>
-                        <div className="flex items-center gap-2 p-1.5 rounded-xl bg-slate-900 border border-slate-800">
+                        <div className={`flex items-center gap-2 p-1.5 rounded-xl border ${
+                          isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-300 shadow-xs'
+                        }`}>
                           <input
                             type="color"
                             value={styleConfig.gradient.colorStops[1]?.color || '#ec4899'}
@@ -943,7 +1070,7 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                             }}
                             className="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0"
                           />
-                          <span className="text-xs font-mono text-slate-200">
+                          <span className={`text-xs font-mono ${isDark ? 'text-slate-200' : 'text-slate-800 font-medium'}`}>
                             {styleConfig.gradient.colorStops[1]?.color}
                           </span>
                         </div>
@@ -952,9 +1079,13 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
 
                     {/* Gradient Angle Slider */}
                     <div>
-                      <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+                      <div className={`flex items-center justify-between text-[11px] mb-1 ${
+                        isDark ? 'text-slate-400' : 'text-slate-600'
+                      }`}>
                         <span>Rotation Angle</span>
-                        <span className="font-mono text-cyan-400">{styleConfig.gradient.rotation}°</span>
+                        <span className={`font-mono font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>
+                          {styleConfig.gradient.rotation}°
+                        </span>
                       </div>
                       <input
                         type="range"
@@ -972,7 +1103,7 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                             },
                           }));
                         }}
-                        className="w-full accent-cyan-400 cursor-pointer"
+                        className="w-full accent-cyan-500 cursor-pointer"
                       />
                     </div>
                   </div>
@@ -980,14 +1111,20 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
               </div>
 
               {/* Corner Eye Customization */}
-              <div className="pt-3 border-t border-slate-800 space-y-3">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+              <div className={`pt-3 border-t space-y-3 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                <label className={`block text-xs font-bold uppercase tracking-wider ${
+                  isDark ? 'text-slate-300' : 'text-slate-700'
+                }`}>
                   Independent Corner Eye Accents
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Corner Square */}
-                  <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2">
-                    <span className="text-xs font-semibold text-slate-300">Outer Eye Square</span>
+                  <div className={`p-3 rounded-2xl border space-y-2 ${
+                    isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <span className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Outer Eye Square
+                    </span>
                     <div className="flex items-center gap-1.5">
                       {(['extra-rounded', 'square', 'dot'] as CornerSquareType[]).map((t) => (
                         <button
@@ -996,8 +1133,12 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                           onClick={() => setStyleConfig((prev) => ({ ...prev, cornerSquareType: t }))}
                           className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-semibold border capitalize transition ${
                             styleConfig.cornerSquareType === t
-                              ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
-                              : 'border-slate-800 text-slate-400'
+                              ? isDark
+                                ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
+                                : 'border-cyan-600 bg-cyan-50 text-cyan-900 font-bold'
+                              : isDark
+                              ? 'border-slate-800 text-slate-400'
+                              : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
                           }`}
                         >
                           {t}
@@ -1013,15 +1154,19 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                         }
                         className="w-6 h-6 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-xs font-mono text-slate-300">
+                      <span className={`text-xs font-mono ${isDark ? 'text-slate-300' : 'text-slate-800 font-medium'}`}>
                         {styleConfig.cornerSquareColor || styleConfig.fgColor}
                       </span>
                     </div>
                   </div>
 
                   {/* Corner Dot */}
-                  <div className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2">
-                    <span className="text-xs font-semibold text-slate-300">Inner Eye Dot</span>
+                  <div className={`p-3 rounded-2xl border space-y-2 ${
+                    isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <span className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      Inner Eye Dot
+                    </span>
                     <div className="flex items-center gap-1.5">
                       {(['dot', 'square'] as CornerDotType[]).map((t) => (
                         <button
@@ -1030,8 +1175,12 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                           onClick={() => setStyleConfig((prev) => ({ ...prev, cornerDotType: t }))}
                           className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-semibold border capitalize transition ${
                             styleConfig.cornerDotType === t
-                              ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
-                              : 'border-slate-800 text-slate-400'
+                              ? isDark
+                                ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
+                                : 'border-cyan-600 bg-cyan-50 text-cyan-900 font-bold'
+                              : isDark
+                              ? 'border-slate-800 text-slate-400'
+                              : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
                           }`}
                         >
                           {t}
@@ -1047,7 +1196,7 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                         }
                         className="w-6 h-6 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-xs font-mono text-slate-300">
+                      <span className={`text-xs font-mono ${isDark ? 'text-slate-300' : 'text-slate-800 font-medium'}`}>
                         {styleConfig.cornerDotColor || styleConfig.fgColor}
                       </span>
                     </div>
@@ -1059,9 +1208,13 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
 
           {/* TAB 4: STICKERS & LOGOS */}
           {activeStudioTab === 'stickers' && (
-            <div className="p-4 sm:p-5 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-5">
+            <div className={`p-4 sm:p-5 rounded-3xl border shadow-xs space-y-5 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${
+                  isDark ? 'text-slate-300' : 'text-slate-700'
+                }`}>
                   Pick a Center Vector Emblem
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -1074,8 +1227,12 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                         onClick={() => handleSelectSticker(st.id)}
                         className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition cursor-pointer ${
                           selectedSticker === st.id
-                            ? 'border-cyan-400 bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-400'
-                            : 'border-slate-800 bg-slate-950/40 text-slate-400 hover:text-white'
+                            ? isDark
+                              ? 'border-cyan-400 bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-400'
+                              : 'border-cyan-600 bg-cyan-50 text-cyan-900 font-bold ring-1 ring-cyan-600/40'
+                            : isDark
+                            ? 'border-slate-800 bg-slate-950/40 text-slate-400 hover:text-white'
+                            : 'border-slate-200 bg-slate-50 text-slate-700 hover:text-slate-900 hover:bg-slate-100'
                         }`}
                       >
                         {IconComp ? <IconComp className="w-5 h-5" /> : <span className="text-xs">✕</span>}
@@ -1087,13 +1244,19 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
               </div>
 
               {/* Custom File Upload */}
-              <div className="pt-3 border-t border-slate-800 space-y-3">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+              <div className={`pt-3 border-t space-y-3 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                <label className={`block text-xs font-bold uppercase tracking-wider ${
+                  isDark ? 'text-slate-300' : 'text-slate-700'
+                }`}>
                   Or Upload Your Own Brand Logo
                 </label>
                 <div className="flex items-center gap-3">
-                  <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer border border-slate-700">
-                    <ImageIcon className="w-4 h-4 text-cyan-400" />
+                  <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                    isDark
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                      : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-xs'
+                  }`}>
+                    <ImageIcon className="w-4 h-4 text-cyan-500" />
                     <span>Upload Image (PNG/SVG)</span>
                     <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                   </label>
@@ -1104,7 +1267,7 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                         setStyleConfig((prev) => ({ ...prev, logoUrl: undefined }));
                         setSelectedSticker('none');
                       }}
-                      className="text-xs text-rose-400 hover:text-rose-300 transition"
+                      className="text-xs text-rose-500 hover:text-rose-600 font-medium transition cursor-pointer"
                     >
                       Remove Logo
                     </button>
@@ -1113,9 +1276,13 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
 
                 {styleConfig.logoUrl && (
                   <div className="pt-2">
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <div className={`flex items-center justify-between text-xs mb-1 ${
+                      isDark ? 'text-slate-400' : 'text-slate-600'
+                    }`}>
                       <span>Logo Scale</span>
-                      <span className="font-mono text-cyan-400">{Math.round(styleConfig.logoSize * 100)}%</span>
+                      <span className={`font-mono font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`}>
+                        {Math.round(styleConfig.logoSize * 100)}%
+                      </span>
                     </div>
                     <input
                       type="range"
@@ -1126,7 +1293,7 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                       onChange={(e) =>
                         setStyleConfig((prev) => ({ ...prev, logoSize: parseFloat(e.target.value) }))
                       }
-                      className="w-full accent-cyan-400 cursor-pointer"
+                      className="w-full accent-cyan-500 cursor-pointer"
                     />
                   </div>
                 )}
@@ -1136,9 +1303,13 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
 
           {/* TAB 5: TARGET PAYLOAD */}
           {activeStudioTab === 'payload' && (
-            <div className="p-4 sm:p-5 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
+            <div className={`p-4 sm:p-5 rounded-3xl border shadow-xs space-y-4 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${
+                  isDark ? 'text-slate-300' : 'text-slate-700'
+                }`}>
                   Destination URL or Text
                 </label>
                 <input
@@ -1146,7 +1317,11 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="https://yourwebsite.com or text payload"
-                  className="w-full px-4 py-3 rounded-xl text-xs sm:text-sm bg-slate-950/80 border border-slate-800 text-slate-100 focus:border-cyan-400 outline-none font-mono"
+                  className={`w-full px-4 py-3 rounded-xl text-xs sm:text-sm border outline-none font-mono ${
+                    isDark
+                      ? 'bg-slate-950/80 border-slate-800 text-slate-100 focus:border-cyan-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                  }`}
                 />
               </div>
 
@@ -1154,9 +1329,13 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer border ${
+                    isDark
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                      : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-xs'
+                  }`}
                 >
-                  {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedLink ? 'Copied' : 'Copy Content'}</span>
                 </button>
               </div>
@@ -1165,10 +1344,12 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
         </div>
 
         {/* Right Side: Live Designed Preview Canvas */}
-        <div className="lg:col-span-5 flex flex-col items-center">
+        <div id="designer-preview-section" className="lg:col-span-5 flex flex-col items-center scroll-mt-24">
           <div className="w-full sticky top-24 space-y-4">
             {/* The Live Composite Card Preview */}
-            <div className="flex justify-center p-4 rounded-3xl bg-slate-950/60 border border-slate-800/80 shadow-2xl">
+            <div className={`flex justify-center p-4 rounded-3xl border shadow-xl ${
+              isDark ? 'bg-slate-950/60 border-slate-800/80' : 'bg-slate-100/90 border-slate-200'
+            }`}>
               <div
                 ref={compositeCardRef}
                 className="relative flex flex-col items-center justify-center p-6 rounded-3xl transition-all duration-300 shadow-xl overflow-hidden"
@@ -1250,27 +1431,39 @@ export const CustomQRDesigner: React.FC<CustomQRDesignerProps> = ({
             </div>
 
             {/* Live Canvas Download & Share Row */}
-            <div className="p-3 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between gap-2">
-              <span className="text-xs font-semibold text-slate-300 pl-1">Export Graphic</span>
+            <div className={`p-3 rounded-2xl border flex items-center justify-between gap-2 shadow-xs ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
+              <span className={`text-xs font-semibold pl-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                Export Graphic
+              </span>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => handleCompositeDownload('png')}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition cursor-pointer shadow-xs"
                 >
                   PNG
                 </button>
                 <button
                   type="button"
                   onClick={() => handleCompositeDownload('jpeg')}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 transition cursor-pointer"
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                    isDark
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+                  }`}
                 >
                   JPEG
                 </button>
                 <button
                   type="button"
                   onClick={() => qrCanvasRef.current?.download('svg', 1024)}
-                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 transition cursor-pointer"
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                    isDark
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+                  }`}
                 >
                   SVG
                 </button>

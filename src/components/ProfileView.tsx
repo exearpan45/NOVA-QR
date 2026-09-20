@@ -88,8 +88,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [resetEmailSent, setResetEmailSent] = useState(false);
 
   // Styling helpers
+  const isDark = theme === 'dark';
   const cardClass = `p-6 sm:p-7 rounded-3xl border transition-all ${
-    theme === 'dark' ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+    isDark ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
   }`;
 
   const favoritesCount = historyItems.filter((i) => i.isFavorite).length;
@@ -109,7 +110,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
   // Password strength calculation
   const getPasswordStrength = (pass: string) => {
-    if (!pass) return { score: 0, label: 'None', color: 'bg-slate-700' };
+    if (!pass) return { score: 0, label: 'None', color: isDark ? 'bg-slate-700' : 'bg-slate-300' };
     let score = 0;
     if (pass.length >= 6) score += 1;
     if (pass.length >= 10) score += 1;
@@ -244,22 +245,30 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     return (
       <div className="max-w-3xl mx-auto space-y-6 animate-fadeIn">
         <div className="text-center sm:text-left">
-          <h1 className="text-3xl font-extrabold text-white flex items-center justify-center sm:justify-start gap-3">
-            <User className="w-8 h-8 text-cyan-400" />
+          <h1 className={`text-3xl font-extrabold flex items-center justify-center sm:justify-start gap-3 ${
+            isDark ? 'text-white' : 'text-slate-900'
+          }`}>
+            <User className={`w-8 h-8 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`} />
             <span>Account Profile</span>
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className={`mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Sign in to manage your profile, security settings, and password options.
           </p>
         </div>
 
         <div className={`${cardClass} text-center py-12 px-6 sm:px-12`}>
-          <div className="w-20 h-20 mx-auto rounded-3xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 shadow-xl shadow-cyan-500/5">
+          <div className={`w-20 h-20 mx-auto rounded-3xl border flex items-center justify-center mb-6 shadow-xl ${
+            isDark
+              ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400 shadow-cyan-500/5'
+              : 'bg-cyan-100 border-cyan-300 text-cyan-700 shadow-cyan-500/10'
+          }`}>
             <Lock className="w-10 h-10" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-2">You are currently in Guest Mode</h2>
-          <p className="text-sm text-slate-400 max-w-md mx-auto mb-8">
+          <h2 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            You are currently in Guest Mode
+          </h2>
+          <p className={`text-sm max-w-md mx-auto mb-8 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Create an account or log in with GitHub, Mobile Number, or Email to unlock cloud sync, profile customization, and password security.
           </p>
 
@@ -272,7 +281,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </button>
             <button
               onClick={() => onOpenAuth('signup')}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition cursor-pointer"
+              className={`w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-sm transition cursor-pointer border ${
+                isDark
+                  ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700'
+                  : 'bg-slate-200 hover:bg-slate-300 text-slate-900 border-slate-300'
+              }`}
             >
               Create Free Account
             </button>
@@ -287,11 +300,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn pb-12">
       {/* Page Title Header */}
       <div>
-        <h1 className="text-3xl font-extrabold text-white flex items-center gap-3">
-          <User className="w-8 h-8 text-cyan-400" />
+        <h1 className={`text-3xl font-extrabold flex items-center gap-3 ${
+          isDark ? 'text-white' : 'text-slate-900'
+        }`}>
+          <User className={`w-8 h-8 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`} />
           <span>Profile & Security</span>
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className={`mt-1 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
           Manage your personal identity, login credentials, and account security.
         </p>
       </div>
@@ -323,7 +338,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder="Enter your name"
-                      className="px-3 py-1 text-sm rounded-lg bg-slate-950 border border-cyan-400 text-white outline-none"
+                      className={`px-3 py-1 text-sm rounded-lg border outline-none ${
+                        isDark
+                          ? 'bg-slate-950 border-cyan-400 text-white'
+                          : 'bg-white border-cyan-600 text-slate-900'
+                      }`}
                       autoFocus
                     />
                     <button
@@ -336,19 +355,25 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     </button>
                     <button
                       onClick={() => setIsEditingName(false)}
-                      className="text-xs text-slate-400 hover:text-white px-2"
+                      className={`text-xs px-2 cursor-pointer ${
+                        isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
                     >
                       Cancel
                     </button>
                   </div>
                 ) : (
                   <>
-                    <h2 className="text-xl sm:text-2xl font-black text-white">
+                    <h2 className={`text-xl sm:text-2xl font-black ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}>
                       {user.user_metadata?.full_name || displayName || 'Account Holder'}
                     </h2>
                     <button
                       onClick={() => setIsEditingName(true)}
-                      className="p-1 rounded-md text-slate-400 hover:text-cyan-400 transition cursor-pointer"
+                      className={`p-1 rounded-md transition cursor-pointer ${
+                        isDark ? 'text-slate-400 hover:text-cyan-400' : 'text-slate-500 hover:text-cyan-700'
+                      }`}
                       title="Edit Display Name"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
@@ -356,42 +381,64 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   </>
                 )}
 
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold flex items-center gap-1">
+                <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold flex items-center gap-1 ${
+                  isDark
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                }`}>
                   <ShieldCheck className="w-3 h-3" />
                   Verified
                 </span>
               </div>
 
               {/* Email / Phone identifier */}
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300 font-mono">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
                 {user.email && (
-                  <span className="flex items-center gap-1.5 bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-800">
-                    <Mail className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${
+                    isDark
+                      ? 'bg-slate-950/60 border-slate-800 text-slate-300'
+                      : 'bg-slate-50 border-slate-200 text-slate-700'
+                  }`}>
+                    <Mail className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                     {user.email}
                   </span>
                 )}
                 {user.phone && (
-                  <span className="flex items-center gap-1.5 bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-800">
-                    <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${
+                    isDark
+                      ? 'bg-slate-950/60 border-slate-800 text-slate-300'
+                      : 'bg-slate-50 border-slate-200 text-slate-700'
+                  }`}>
+                    <Phone className="w-3.5 h-3.5 text-emerald-500" />
                     {user.phone}
                   </span>
                 )}
                 {provider === 'github' && (
-                  <span className="flex items-center gap-1.5 bg-slate-950/60 px-2.5 py-1 rounded-lg border border-slate-800">
-                    <Github className="w-3.5 h-3.5 text-purple-400" />
+                  <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${
+                    isDark
+                      ? 'bg-slate-950/60 border-slate-800 text-slate-300'
+                      : 'bg-slate-50 border-slate-200 text-slate-700'
+                  }`}>
+                    <Github className="w-3.5 h-3.5 text-purple-500" />
                     GitHub Auth
                   </span>
                 )}
                 {provider === 'facebook' && (
-                  <span className="flex items-center gap-1.5 bg-slate-950/60 px-2.5 py-1 rounded-lg border border-blue-900/60 text-blue-300">
-                    <Facebook className="w-3.5 h-3.5 text-blue-400" />
+                  <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${
+                    isDark
+                      ? 'bg-slate-950/60 border-blue-900/60 text-blue-300'
+                      : 'bg-blue-50 border-blue-200 text-blue-800'
+                  }`}>
+                    <Facebook className="w-3.5 h-3.5 text-blue-500" />
                     Facebook Auth
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 text-[11px] text-slate-400 pt-1">
-                <Calendar className="w-3.5 h-3.5 text-slate-500" />
+              <div className={`flex items-center gap-2 text-[11px] pt-1 ${
+                isDark ? 'text-slate-400' : 'text-slate-600'
+              }`}>
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
                 <span>
                   Member since{' '}
                   {new Date(user.created_at).toLocaleDateString(undefined, {
@@ -408,15 +455,23 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           <div className="flex sm:flex-col gap-2 shrink-0 justify-end">
             <button
               onClick={handleExportAccountData}
-              className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold transition cursor-pointer"
+              className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
+                isDark
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+              }`}
               title="Download your QR data backup"
             >
-              <Download className="w-3.5 h-3.5 text-cyan-400" />
+              <Download className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
               <span>Export Data</span>
             </button>
             <button
               onClick={onSignOut}
-              className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold transition cursor-pointer"
+              className={`flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
+                isDark
+                  ? 'border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300'
+                  : 'border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-700'
+              }`}
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log Out</span>
@@ -432,13 +487,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           className={`${cardClass} p-4 cursor-pointer hover:border-cyan-500/40 transition group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
               Generator
             </span>
-            <QrCode className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+            <QrCode className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'} group-hover:scale-110 transition-transform`} />
           </div>
-          <div className="mt-2 text-xl font-black text-white">Create</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">10+ categories</p>
+          <div className={`mt-2 text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>Create</div>
+          <p className={`text-[10px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>10+ categories</p>
         </div>
 
         <div
@@ -446,13 +503,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           className={`${cardClass} p-4 cursor-pointer hover:border-cyan-500/40 transition group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
               History
             </span>
-            <Clock className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
+            <Clock className={`w-3.5 h-3.5 ${isDark ? 'text-sky-400' : 'text-sky-600'} group-hover:scale-110 transition-transform`} />
           </div>
-          <div className="mt-2 text-xl font-black text-white">{historyCount}</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">Saved codes</p>
+          <div className={`mt-2 text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{historyCount}</div>
+          <p className={`text-[10px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Saved codes</p>
         </div>
 
         <div
@@ -460,13 +519,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           className={`${cardClass} p-4 cursor-pointer hover:border-amber-500/40 transition group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
               Favorites
             </span>
-            <Star className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+            <Star className="w-3.5 h-3.5 text-amber-500 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-xl font-black text-white">{favoritesCount}</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">Starred codes</p>
+          <div className={`mt-2 text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{favoritesCount}</div>
+          <p className={`text-[10px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Starred codes</p>
         </div>
 
         <div
@@ -474,13 +535,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           className={`${cardClass} p-4 cursor-pointer hover:border-emerald-500/40 transition group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
               Dynamic QRs
             </span>
-            <Link2 className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <Link2 className="w-3.5 h-3.5 text-emerald-500 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-xl font-black text-white">{dynamicQRsCount}</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">Editable targets</p>
+          <div className={`mt-2 text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{dynamicQRsCount}</div>
+          <p className={`text-[10px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Editable targets</p>
         </div>
 
         <div
@@ -488,13 +551,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           className={`${cardClass} p-4 cursor-pointer hover:border-purple-500/40 transition group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
               Analytics
             </span>
-            <TrendingUp className="w-3.5 h-3.5 text-purple-400 group-hover:scale-110 transition-transform" />
+            <TrendingUp className="w-3.5 h-3.5 text-purple-500 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-xl font-black text-white">Live</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">Scan telemetry</p>
+          <div className={`mt-2 text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>Live</div>
+          <p className={`text-[10px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Scan telemetry</p>
         </div>
 
         <div
@@ -502,32 +567,40 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           className={`${cardClass} p-4 cursor-pointer hover:border-pink-500/40 transition group`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
               Link-in-Bio
             </span>
-            <Smartphone className="w-3.5 h-3.5 text-pink-400 group-hover:scale-110 transition-transform" />
+            <Smartphone className="w-3.5 h-3.5 text-pink-500 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="mt-2 text-xl font-black text-white">Page</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">Digital vCard</p>
+          <div className={`mt-2 text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>Page</div>
+          <p className={`text-[10px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Digital vCard</p>
         </div>
       </div>
 
       {/* Brand Profiles & Logo Library */}
       <div className={cardClass}>
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-wider">
+          <div className={`flex items-center gap-2 font-bold text-xs uppercase tracking-wider ${
+            isDark ? 'text-cyan-400' : 'text-cyan-700'
+          }`}>
             <Briefcase className="w-4 h-4" />
             <span>Brand Kit & Logo Profiles</span>
           </div>
           <button
             onClick={() => onNavigateToTab('generator')}
-            className="text-xs text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
+            className={`text-xs font-semibold cursor-pointer ${
+              isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-700 hover:text-cyan-900'
+            }`}
           >
             Customize in Generator →
           </button>
         </div>
-        <h3 className="text-lg font-bold text-white mb-1">Saved Design Presets & Brand Kits</h3>
-        <p className="text-xs text-slate-400 mb-4">
+        <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          Saved Design Presets & Brand Kits
+        </h3>
+        <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
           Reusable palettes, dot styles, and center logos synced for your QR campaigns.
         </p>
 
@@ -535,22 +608,24 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           {brandKits.map((kit) => (
             <div
               key={kit.id}
-              className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-between"
+              className={`p-3.5 rounded-2xl border flex items-center justify-between ${
+                isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200 shadow-xs'
+              }`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div className="flex -space-x-1.5 shrink-0">
                   <div
-                    className="w-5 h-5 rounded-full border border-white/20 shadow-xs"
+                    className="w-5 h-5 rounded-full border border-black/10 shadow-xs"
                     style={{ backgroundColor: kit.dotColor }}
                   />
                   <div
-                    className="w-5 h-5 rounded-full border border-white/20 shadow-xs"
+                    className="w-5 h-5 rounded-full border border-black/10 shadow-xs"
                     style={{ backgroundColor: kit.cornerSquareColor }}
                   />
                 </div>
                 <div className="truncate">
-                  <p className="text-xs font-bold text-white truncate">{kit.name}</p>
-                  <p className="text-[10px] text-slate-400">
+                  <p className={`text-xs font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{kit.name}</p>
+                  <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     Pattern: {kit.dotType} • Frame: {kit.cornerSquareType}
                   </p>
                 </div>
@@ -558,7 +633,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
               <button
                 onClick={() => handleDeleteBrandKit(kit.id, kit.name)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-900 transition cursor-pointer shrink-0"
+                className={`p-1.5 rounded-lg transition cursor-pointer shrink-0 ${
+                  isDark
+                    ? 'text-slate-400 hover:text-rose-400 hover:bg-slate-900'
+                    : 'text-slate-400 hover:text-rose-600 hover:bg-slate-200'
+                }`}
                 title="Delete Brand Kit"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -570,49 +649,71 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
       {/* 3. Password & Security Management */}
       <div className={cardClass}>
-        <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-wider mb-2">
+        <div className={`flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-2 ${
+          isDark ? 'text-cyan-400' : 'text-cyan-700'
+        }`}>
           <KeyRound className="w-4 h-4" />
           <span>Security & Credentials</span>
         </div>
-        <h3 className="text-lg font-bold text-white mb-1">Update Your Password</h3>
-        <p className="text-xs text-slate-400 mb-6">
+        <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          Update Your Password
+        </h3>
+        <p className={`text-xs mb-6 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
           Change your account login password directly below, or send a reset link to your registered email.
         </p>
 
         {/* Feedback alerts */}
         {passwordError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 animate-fadeIn">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+          <div className={`mb-4 p-3 rounded-xl border text-xs flex items-start gap-2.5 animate-fadeIn ${
+            isDark
+              ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
+              : 'bg-rose-50 border-rose-300 text-rose-800'
+          }`}>
+            <AlertCircle className={`w-4 h-4 shrink-0 mt-0.5 ${isDark ? 'text-rose-400' : 'text-rose-600'}`} />
             <span>{passwordError}</span>
           </div>
         )}
 
         {passwordSuccess && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs flex items-start gap-2.5 animate-fadeIn">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
+          <div className={`mb-4 p-3 rounded-xl border text-xs flex items-start gap-2.5 animate-fadeIn ${
+            isDark
+              ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
+              : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+          }`}>
+            <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
             <span>{passwordSuccess}</span>
           </div>
         )}
 
         <form onSubmit={handleUpdatePassword} className="space-y-4 max-w-lg">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className={`block text-xs font-semibold mb-1.5 ${
+              isDark ? 'text-slate-300' : 'text-slate-700'
+            }`}>
               New Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                isDark ? 'text-slate-400' : 'text-slate-500'
+              }`} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="At least 6 characters"
-                className="w-full pl-10 pr-10 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                className={`w-full pl-10 pr-10 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition border ${
+                  isDark
+                    ? 'bg-slate-950/60 border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400'
+                    : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600'
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 cursor-pointer"
+                className={`absolute right-3.5 top-1/2 -translate-y-1/2 cursor-pointer ${
+                  isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
+                }`}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -622,34 +723,46 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             {/* Strength meter bar */}
             {newPassword && (
               <div className="mt-2 space-y-1">
-                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden flex gap-1">
+                <div className={`h-1.5 w-full rounded-full overflow-hidden flex gap-1 ${
+                  isDark ? 'bg-slate-800' : 'bg-slate-200'
+                }`}>
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
                       passwordStrength.score >= 1 ? passwordStrength.color : 'bg-transparent'
                     } ${passwordStrength.score === 1 ? 'w-1/3' : passwordStrength.score === 2 ? 'w-2/3' : 'w-full'}`}
                   />
                 </div>
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className={`flex justify-between text-[10px] ${
+                  isDark ? 'text-slate-400' : 'text-slate-600'
+                }`}>
                   <span>Password strength:</span>
-                  <span className="font-semibold text-slate-200">{passwordStrength.label}</span>
+                  <span className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{passwordStrength.label}</span>
                 </div>
               </div>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className={`block text-xs font-semibold mb-1.5 ${
+              isDark ? 'text-slate-300' : 'text-slate-700'
+            }`}>
               Confirm New Password
             </label>
             <div className="relative">
-              <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <KeyRound className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                isDark ? 'text-slate-400' : 'text-slate-500'
+              }`} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repeat new password"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition border ${
+                  isDark
+                    ? 'bg-slate-950/60 border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400'
+                    : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600'
+                }`}
               />
             </div>
           </div>
@@ -679,12 +792,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 type="button"
                 onClick={handleSendResetEmail}
                 disabled={sendingResetEmail || resetEmailSent}
-                className="px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-300 hover:text-white font-semibold text-xs sm:text-sm transition cursor-pointer flex items-center gap-2 disabled:opacity-60"
+                className={`px-4 py-2.5 rounded-xl border font-semibold text-xs sm:text-sm transition cursor-pointer flex items-center gap-2 disabled:opacity-60 ${
+                  isDark
+                    ? 'border-slate-800 bg-slate-950/70 hover:bg-slate-800 text-slate-300 hover:text-white'
+                    : 'border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-800'
+                }`}
               >
                 {sendingResetEmail ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                  <Loader2 className={`w-4 h-4 animate-spin ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                 ) : (
-                  <Send className="w-3.5 h-3.5 text-cyan-400" />
+                  <Send className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                 )}
                 <span>
                   {resetEmailSent ? 'Reset Link Emailed' : 'Email Me a Reset Link'}
@@ -697,26 +814,36 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
       {/* 4. Session & Authentication Information */}
       <div className={cardClass}>
-        <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-wider mb-2">
+        <div className={`flex items-center gap-2 font-bold text-xs uppercase tracking-wider mb-2 ${
+          isDark ? 'text-cyan-400' : 'text-cyan-700'
+        }`}>
           <ShieldCheck className="w-4 h-4" />
           <span>Security & Sessions</span>
         </div>
-        <h3 className="text-lg font-bold text-white mb-1">Session Information</h3>
-        <p className="text-xs text-slate-400 mb-4">
+        <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Session Information</h3>
+        <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
           Details about your active cryptographic session and authenticated connection.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span className="text-slate-400 block text-[11px] mb-0.5">Authentication Method</span>
-            <span className="font-bold text-white uppercase tracking-wider text-[11px]">
+          <div className={`p-3 rounded-xl border ${
+            isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+          }`}>
+            <span className={`block text-[11px] mb-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Authentication Method</span>
+            <span className={`font-bold uppercase tracking-wider text-[11px] ${
+              isDark ? 'text-white' : 'text-slate-900'
+            }`}>
               {provider} Authenticated
             </span>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span className="text-slate-400 block text-[11px] mb-0.5">Account ID</span>
-            <span className="font-mono text-slate-300 truncate block">
+          <div className={`p-3 rounded-xl border ${
+            isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+          }`}>
+            <span className={`block text-[11px] mb-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Account ID</span>
+            <span className={`font-mono truncate block ${
+              isDark ? 'text-slate-300' : 'text-slate-800 font-semibold'
+            }`}>
               {user.id}
             </span>
           </div>

@@ -206,18 +206,24 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
 
   const CategoryIcon = scannedResult ? getCategoryIcon(scannedResult.category) : FileText;
 
+  const isDark = theme === 'dark';
+
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-fadeIn">
       {/* Title */}
       <div className="text-center">
-        <h1 className="text-3xl font-extrabold text-slate-100">QR Code Scanner</h1>
-        <p className="mt-2 text-sm text-slate-400">
+        <h1 className={`text-3xl font-extrabold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+          QR Code Scanner
+        </h1>
+        <p className={`mt-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
           Decode QR codes using your device camera or by uploading an image.
         </p>
       </div>
 
       {/* Mode Selector */}
-      <div className="flex items-center justify-center gap-2 p-1.5 rounded-2xl bg-slate-900/60 border border-slate-800 max-w-md mx-auto">
+      <div className={`flex items-center justify-center gap-2 p-1.5 rounded-2xl border max-w-md mx-auto ${
+        isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-100 border-slate-300 shadow-xs'
+      }`}>
         <button
           id="btn-scanner-mode-upload"
           onClick={() => {
@@ -227,7 +233,7 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             scanMode === 'upload'
               ? 'bg-cyan-500 text-slate-950 shadow-md'
-              : 'text-slate-400 hover:text-white'
+              : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Upload className="w-4 h-4" />
@@ -243,7 +249,7 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
             scanMode === 'camera'
               ? 'bg-cyan-500 text-slate-950 shadow-md'
-              : 'text-slate-400 hover:text-white'
+              : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Camera className="w-4 h-4" />
@@ -255,14 +261,18 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
       {scanMode === 'camera' && (
         <div
           className={`p-6 rounded-3xl border shadow-xl backdrop-blur-xl text-center relative overflow-hidden ${
-            theme === 'dark' ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200'
+            isDark ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200'
           }`}
         >
           {cameraError ? (
-            <div className="p-6 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-300 max-w-lg mx-auto">
-              <AlertCircle className="w-8 h-8 text-rose-400 mx-auto mb-3" />
-              <h3 className="text-sm font-bold text-white mb-1">Camera Notice</h3>
-              <p className="text-xs text-rose-200/90 leading-relaxed mb-4">{cameraError}</p>
+            <div className={`p-6 rounded-2xl border max-w-lg mx-auto ${
+              isDark
+                ? 'bg-rose-950/40 border-rose-500/30 text-rose-300'
+                : 'bg-rose-50 border-rose-300 text-rose-800 shadow-xs'
+            }`}>
+              <AlertCircle className={`w-8 h-8 mx-auto mb-3 ${isDark ? 'text-rose-400' : 'text-rose-600'}`} />
+              <h3 className={`text-sm font-bold mb-1 ${isDark ? 'text-white' : 'text-rose-950'}`}>Camera Notice</h3>
+              <p className={`text-xs leading-relaxed mb-4 ${isDark ? 'text-rose-200/90' : 'text-rose-700'}`}>{cameraError}</p>
               <button
                 onClick={() => setScanMode('upload')}
                 className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 text-xs font-bold shadow-md hover:bg-cyan-400 transition"
@@ -304,7 +314,11 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
                 {isCameraActive ? (
                   <button
                     onClick={stopCamera}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold hover:bg-rose-500/30 transition cursor-pointer"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer border ${
+                      isDark
+                        ? 'bg-rose-500/20 border-rose-500/40 text-rose-300 hover:bg-rose-500/30'
+                        : 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100'
+                    }`}
                   >
                     <StopCircle className="w-4 h-4" />
                     <span>Stop Camera</span>
@@ -328,7 +342,7 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
       {scanMode === 'upload' && (
         <div
           className={`p-8 rounded-3xl border shadow-xl backdrop-blur-xl text-center ${
-            theme === 'dark' ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200'
+            isDark ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200'
           }`}
         >
           <input
@@ -342,16 +356,28 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
 
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-700 hover:border-cyan-400/80 rounded-2xl p-10 cursor-pointer bg-slate-950/30 hover:bg-cyan-500/5 transition flex flex-col items-center justify-center max-w-lg mx-auto"
+            className={`border-2 border-dashed rounded-2xl p-10 cursor-pointer transition flex flex-col items-center justify-center max-w-lg mx-auto ${
+              isDark
+                ? 'border-slate-700 hover:border-cyan-400/80 bg-slate-950/30 hover:bg-cyan-500/5'
+                : 'border-slate-300 hover:border-cyan-600 bg-slate-50 hover:bg-cyan-50/50 shadow-xs'
+            }`}
           >
-            <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 mb-4">
+            <div className={`p-4 rounded-2xl border mb-4 ${
+              isDark
+                ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
+                : 'bg-cyan-100 border-cyan-300 text-cyan-700'
+            }`}>
               <Upload className="w-8 h-8" />
             </div>
-            <h3 className="text-sm font-bold text-slate-100">Upload QR Code Image</h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-sm">
+            <h3 className={`text-sm font-bold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>Upload QR Code Image</h3>
+            <p className={`text-xs mt-1 max-w-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               Drag and drop an image here, or click to browse (PNG, JPG, WEBP, SVG)
             </p>
-            <span className="mt-4 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition">
+            <span className={`mt-4 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition border ${
+              isDark
+                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border-slate-300'
+            }`}>
               Select File
             </span>
           </div>
@@ -362,21 +388,29 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
       {scannedResult && (
         <div
           className={`p-6 rounded-3xl border shadow-2xl backdrop-blur-xl animate-scaleIn ${
-            theme === 'dark'
+            isDark
               ? 'bg-slate-900/90 border-cyan-500/40 text-slate-100'
               : 'bg-white border-cyan-600/40 text-slate-900 shadow-cyan-500/10'
           }`}
         >
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className={`flex items-center justify-between pb-4 border-b ${
+            isDark ? 'border-slate-800' : 'border-slate-200'
+          }`}>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+              <div className={`p-2.5 rounded-xl border ${
+                isDark
+                  ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+                  : 'bg-cyan-100 text-cyan-800 border-cyan-300'
+              }`}>
                 <CategoryIcon className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[10px] uppercase font-bold text-cyan-400 tracking-wider">
+                <span className={`text-[10px] uppercase font-bold tracking-wider ${
+                  isDark ? 'text-cyan-400' : 'text-cyan-700'
+                }`}>
                   {scannedResult.category}
                 </span>
-                <h3 className="text-base font-bold text-white">{scannedResult.title}</h3>
+                <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{scannedResult.title}</h3>
               </div>
             </div>
 
@@ -384,9 +418,13 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
               <button
                 id="btn-copy-scanned-content"
                 onClick={handleCopyScannedText}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition cursor-pointer"
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
+                  isDark
+                    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+                }`}
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
 
@@ -407,20 +445,30 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
           {scannedResult.details && (
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               {Object.entries(scannedResult.details).map(([key, val]) => (
-                <div key={key} className="p-2.5 rounded-xl bg-slate-950/40 border border-slate-800">
-                  <span className="text-slate-400 font-medium">{key}: </span>
-                  <span className="text-slate-200 font-semibold">{val}</span>
+                <div key={key} className={`p-2.5 rounded-xl border ${
+                  isDark
+                    ? 'bg-slate-950/40 border-slate-800'
+                    : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <span className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{key}: </span>
+                  <span className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{val}</span>
                 </div>
               ))}
             </div>
           )}
 
           {/* Raw payload string */}
-          <div className="mt-4 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
-            <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+          <div className={`mt-4 p-3.5 rounded-2xl border ${
+            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-slate-50 border-slate-200'
+          }`}>
+            <span className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
+            }`}>
               Raw Encoded Content
             </span>
-            <p className="font-mono text-xs text-cyan-300 break-all select-all leading-relaxed">
+            <p className={`font-mono text-xs break-all select-all leading-relaxed ${
+              isDark ? 'text-cyan-300' : 'text-cyan-800 font-semibold'
+            }`}>
               {scannedResult.displayValue}
             </p>
           </div>
@@ -430,7 +478,9 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
             <div className="mt-4 pt-3 flex justify-end">
               <button
                 onClick={() => onSendToGenerator(scannedResult.displayValue)}
-                className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-semibold transition"
+                className={`flex items-center gap-1.5 text-xs font-semibold transition cursor-pointer ${
+                  isDark ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-700 hover:text-cyan-800'
+                }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Remix / Style in Generator</span>
@@ -443,30 +493,36 @@ export const ScannerView: React.FC<ScannerViewProps> = ({
       {/* Safety URL confirmation dialog */}
       {showUrlConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-800 p-6 text-slate-100 shadow-2xl">
-            <div className="flex items-center gap-3 text-amber-400 mb-3">
+          <div className={`w-full max-w-md rounded-2xl border p-6 shadow-2xl ${
+            isDark ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className="flex items-center gap-3 text-amber-500 mb-3">
               <ShieldAlert className="w-6 h-6 shrink-0" />
-              <h3 className="text-base font-bold text-white">External Link Safety Check</h3>
+              <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>External Link Safety Check</h3>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed mb-3">
+            <p className={`text-xs leading-relaxed mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
               NOVA QR will never automatically open external links without your consent. Verify the destination URL before visiting:
             </p>
 
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-cyan-300 break-all mb-5">
+            <div className={`p-3 rounded-xl border font-mono text-xs break-all mb-5 ${
+              isDark ? 'bg-slate-950 border-slate-800 text-cyan-300' : 'bg-slate-50 border-slate-200 text-cyan-800 font-semibold'
+            }`}>
               {scannedResult?.linkUrl}
             </div>
 
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowUrlConfirm(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition"
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
                 Cancel
               </button>
               <button
                 onClick={confirmOpenLink}
-                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-md transition"
+                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer"
               >
                 Continue to URL
               </button>

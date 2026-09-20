@@ -22,33 +22,33 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismis
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
               transition={{ duration: 0.25 }}
-              className={`pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border shadow-xl backdrop-blur-md ${
+              className={`pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border shadow-xl backdrop-blur-md transition-colors ${
                 type === 'success'
-                  ? 'bg-slate-900/95 border-emerald-500/30 text-emerald-300'
+                  ? 'bg-white dark:bg-slate-900/95 border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
                   : type === 'error'
-                  ? 'bg-slate-900/95 border-rose-500/30 text-rose-300'
+                  ? 'bg-white dark:bg-slate-900/95 border-rose-300 dark:border-rose-500/30 text-rose-700 dark:text-rose-300'
                   : type === 'warning'
-                  ? 'bg-slate-900/95 border-amber-500/30 text-amber-300'
-                  : 'bg-slate-900/95 border-cyan-500/30 text-cyan-300'
+                  ? 'bg-white dark:bg-slate-900/95 border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-300'
+                  : 'bg-white dark:bg-slate-900/95 border-cyan-300 dark:border-cyan-500/30 text-cyan-700 dark:text-cyan-300'
               }`}
             >
               <div className="mt-0.5 shrink-0">
-                {type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-                {type === 'error' && <AlertCircle className="w-5 h-5 text-rose-400" />}
-                {type === 'warning' && <AlertTriangle className="w-5 h-5 text-amber-400" />}
-                {type === 'info' && <Info className="w-5 h-5 text-cyan-400" />}
+                {type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />}
+                {type === 'error' && <AlertCircle className="w-5 h-5 text-rose-500 dark:text-rose-400" />}
+                {type === 'warning' && <AlertTriangle className="w-5 h-5 text-amber-500 dark:text-amber-400" />}
+                {type === 'info' && <Info className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />}
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-100 leading-snug">{toast.title}</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 leading-snug">{toast.title}</p>
                 {toast.description && (
-                  <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{toast.description}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">{toast.description}</p>
                 )}
               </div>
 
               <button
                 onClick={() => onDismiss(toast.id)}
-                className="shrink-0 p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition"
+                className="shrink-0 p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition cursor-pointer"
                 aria-label="Dismiss toast"
               >
                 <X className="w-4 h-4" />

@@ -1,5 +1,4 @@
-```tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   X,
   Mail,
@@ -14,39 +13,39 @@ import {
   Facebook,
   Phone,
   RotateCcw,
-} from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { NovaLogo } from './NovaLogo';
-import { syncHistoryWithCloud } from '../utils/cloudSync';
+} from "lucide-react";
+import { supabase } from "../lib/supabase";
+import { NovaLogo } from "./NovaLogo";
+import { syncHistoryWithCloud } from "../utils/cloudSync";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'signup';
-  theme: 'dark' | 'light';
+  initialMode?: "login" | "signup";
+  theme: "dark" | "light";
   onSuccess: (message: string) => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
-  initialMode = 'login',
+  initialMode = "login",
   theme,
   onSuccess,
 }) => {
-  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>(initialMode);
+  const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">(initialMode);
 
   // Email / Password states
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
 
   // Mobile / Phone OTP states
-  const [phone, setPhone] = useState('');
-  const [otpCode, setOtpCode] = useState('');
-  const [phoneStep, setPhoneStep] = useState<'request' | 'verify'>('request');
+  const [phone, setPhone] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [phoneStep, setPhoneStep] = useState<"request" | "verify">("request");
 
   // Loadings and messages
   const [loading, setLoading] = useState(false);
@@ -61,26 +60,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setMode(initialMode);
       setErrorMessage(null);
       setInfoMessage(null);
-      setPhoneStep('request');
-      setOtpCode('');
+      setPhoneStep("request");
+      setOtpCode("");
     }
   }, [isOpen, initialMode]);
 
   if (!isOpen) return null;
 
   const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setFullName('');
-    setPhone('');
-    setOtpCode('');
-    setPhoneStep('request');
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setFullName("");
+    setPhone("");
+    setOtpCode("");
+    setPhoneStep("request");
     setErrorMessage(null);
     setInfoMessage(null);
   };
 
-  const handleSwitchMode = (newMode: 'login' | 'signup' | 'forgot') => {
+  const handleSwitchMode = (newMode: "login" | "signup" | "forgot") => {
     setMode(newMode);
     setErrorMessage(null);
     setInfoMessage(null);
@@ -94,7 +93,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
+        provider: "github",
         options: {
           redirectTo: window.location.origin,
         },
@@ -104,21 +103,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         throw error;
       }
     } catch (err: unknown) {
-      const msg = (err as Error).message || '';
-
+      const msg = (err as Error).message || "";
       if (
-        msg.toLowerCase().includes('unsupported provider') ||
-        msg.toLowerCase().includes('not enabled')
+        msg.toLowerCase().includes("unsupported provider") ||
+        msg.toLowerCase().includes("not enabled")
       ) {
         setErrorMessage(
-          'GitHub Authentication is not enabled yet in your backend project settings. Please turn on GitHub in your Supabase Auth Providers dashboard, or use Phone Number / Email below.'
+          "GitHub Authentication is not enabled yet in your backend project settings. Please turn on GitHub in your Supabase Auth Providers dashboard, or use Phone Number / Email below.",
         );
       } else {
         setErrorMessage(
-          msg || 'Failed to initialize GitHub sign in. Please try again.'
+          msg || "Failed to initialize GitHub sign in. Please try again.",
         );
       }
-
       setGithubLoading(false);
     }
   };
@@ -131,7 +128,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
+        provider: "facebook",
         options: {
           redirectTo: window.location.origin,
         },
@@ -141,21 +138,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         throw error;
       }
     } catch (err: unknown) {
-      const msg = (err as Error).message || '';
-
+      const msg = (err as Error).message || "";
       if (
-        msg.toLowerCase().includes('unsupported provider') ||
-        msg.toLowerCase().includes('not enabled')
+        msg.toLowerCase().includes("unsupported provider") ||
+        msg.toLowerCase().includes("not enabled")
       ) {
         setErrorMessage(
-          'Facebook Login is not enabled yet in your backend project settings. Please enable the Facebook provider in your Supabase Auth Providers dashboard, or use GitHub / Phone / Email below.'
+          "Facebook Login is not enabled yet in your backend project settings. Please enable the Facebook provider in your Supabase Auth Providers dashboard, or use GitHub / Phone / Email below.",
         );
       } else {
         setErrorMessage(
-          msg || 'Failed to initialize Facebook sign in. Please try again.'
+          msg || "Failed to initialize Facebook sign in. Please try again.",
         );
       }
-
       setFacebookLoading(false);
     }
   };
@@ -166,28 +161,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setErrorMessage(null);
     setInfoMessage(null);
 
-    let cleanPhone = phone.trim().replace(/[\s-()]/g, '');
-
+    let cleanPhone = phone.trim().replace(/[\s-()]/g, "");
     if (!cleanPhone) {
-      setErrorMessage('Please enter your mobile number.');
+      setErrorMessage("Please enter your mobile number.");
       return;
     }
 
     // Ensure it has country code prefix
-    if (!cleanPhone.startsWith('+')) {
-      cleanPhone = '+' + cleanPhone;
+    if (!cleanPhone.startsWith("+")) {
+      cleanPhone = "+" + cleanPhone;
     }
 
     if (cleanPhone.length < 8) {
       setErrorMessage(
-        'Please enter a valid mobile number with country code (e.g. +1234567890 or +919876543210).'
+        "Please enter a valid mobile number with country code (e.g. +1234567890 or +919876543210).",
       );
       return;
     }
 
     try {
       setLoading(true);
-
       const { error } = await supabase.auth.signInWithOtp({
         phone: cleanPhone,
       });
@@ -195,28 +188,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (error) throw error;
 
       setPhone(cleanPhone);
-      setPhoneStep('verify');
-
+      setPhoneStep("verify");
       setInfoMessage(
-        `Verification code sent to ${cleanPhone}. Please enter the 6-digit OTP.`
+        `Verification code sent to ${cleanPhone}. Please enter the 6-digit OTP.`,
       );
-
       onSuccess(`OTP sent to ${cleanPhone}`);
     } catch (err: unknown) {
-      const msg = (err as Error).message || '';
-
+      const msg = (err as Error).message || "";
       if (
-        msg.toLowerCase().includes('unsupported provider') ||
-        msg.toLowerCase().includes('sms provider') ||
-        msg.toLowerCase().includes('not enabled')
+        msg.toLowerCase().includes("unsupported provider") ||
+        msg.toLowerCase().includes("sms provider") ||
+        msg.toLowerCase().includes("not enabled")
       ) {
         setErrorMessage(
-          'SMS provider (Twilio / MessageBird) is not configured yet in your backend dashboard. Please configure an SMS provider or use Email / GitHub.'
+          "SMS provider (Twilio / MessageBird) is not configured yet in your backend dashboard. Please configure an SMS provider or use Email / GitHub.",
         );
       } else {
         setErrorMessage(
           msg ||
-            'Failed to send OTP to mobile number. Please check the number and try again.'
+            "Failed to send OTP to mobile number. Please check the number and try again.",
         );
       }
     } finally {
@@ -231,21 +221,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setInfoMessage(null);
 
     const cleanToken = otpCode.trim();
-
     if (!cleanToken || cleanToken.length < 4) {
-      setErrorMessage(
-        'Please enter the verification code received via SMS.'
-      );
+      setErrorMessage("Please enter the verification code received via SMS.");
       return;
     }
 
     try {
       setLoading(true);
-
       const { data, error } = await supabase.auth.verifyOtp({
         phone,
         token: cleanToken,
-        type: 'sms',
+        type: "sms",
       });
 
       if (error) throw error;
@@ -254,23 +240,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         try {
           await syncHistoryWithCloud(data.user);
         } catch (syncErr) {
-          console.error('Phone login history sync error:', syncErr);
+          console.error("Phone login history sync error:", syncErr);
         }
       }
 
       if (data.session) {
-        onSuccess('Mobile number verified! Logged in successfully.');
+        onSuccess("Mobile number verified! Logged in successfully.");
         resetForm();
         onClose();
       } else {
-        onSuccess('Mobile number verified!');
+        onSuccess("Mobile number verified!");
         resetForm();
         onClose();
       }
     } catch (err: unknown) {
       setErrorMessage(
         (err as Error).message ||
-          'Invalid or expired verification code. Please try again.'
+          "Invalid or expired verification code. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -284,60 +270,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setInfoMessage(null);
 
     const cleanEmail = email.trim().toLowerCase();
-
-    if (!cleanEmail || !cleanEmail.includes('@')) {
-      setErrorMessage('Please enter a valid email address.');
+    if (!cleanEmail || !cleanEmail.includes("@")) {
+      setErrorMessage("Please enter a valid email address.");
       return;
     }
 
-    // Forgot Password
-    if (mode === 'forgot') {
+    if (mode === "forgot") {
       try {
         setLoading(true);
-
         const { error } = await supabase.auth.resetPasswordForEmail(
           cleanEmail,
           {
             redirectTo: window.location.origin,
-          }
+          },
         );
-
         if (error) throw error;
-
         setInfoMessage(
-          'Password reset link sent to your email. Please check your inbox.'
+          "Password reset link sent to your email. Please check your inbox.",
         );
-
-        onSuccess('Password reset link sent to your email');
+        onSuccess("Password reset link sent to your email");
       } catch (err: unknown) {
         setErrorMessage(
-          (err as Error).message ||
-            'Failed to send password reset email.'
+          (err as Error).message || "Failed to send password reset email.",
         );
       } finally {
         setLoading(false);
       }
-
       return;
     }
 
     if (!password || password.length < 6) {
-      setErrorMessage('Password must be at least 6 characters long.');
+      setErrorMessage("Password must be at least 6 characters long.");
       return;
     }
 
-    // Sign Up
-    if (mode === 'signup') {
+    if (mode === "signup") {
       if (password !== confirmPassword) {
-        setErrorMessage(
-          'Passwords do not match. Please verify and try again.'
-        );
+        setErrorMessage("Passwords do not match. Please verify and try again.");
         return;
       }
 
       try {
         setLoading(true);
-
         const { data, error } = await supabase.auth.signUp({
           email: cleanEmail,
           password,
@@ -354,44 +328,42 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           try {
             await syncHistoryWithCloud(data.user);
           } catch (syncErr) {
-            console.error('Signup history sync error:', syncErr);
+            console.error("Signup history sync error:", syncErr);
           }
         }
 
         if (data.session) {
-          onSuccess('Account created and logged in successfully!');
+          onSuccess("Account created and logged in successfully!");
           resetForm();
           onClose();
         } else {
           setInfoMessage(
-            'Account registered! Please check your email to confirm your account before logging in.'
+            "Account registered! Please check your email to confirm your account before logging in.",
           );
-
-          onSuccess(
-            'Registration successful! Check email for verification.'
-          );
+          onSuccess("Registration successful! Check email for verification.");
         }
       } catch (err: unknown) {
-        setErrorMessage(
-          (err as Error).message ||
-            'Registration failed. Please try again.'
-        );
+        const msg = (err as Error).message || "";
+        if (msg.toLowerCase().includes("captcha")) {
+          setErrorMessage(
+            'hCaptcha protection is not required by this app. If your Supabase project enforces Captcha, please turn off "Enable Captcha protection" in your Supabase Auth dashboard under Authentication -> Bot Protection to permit direct sign-in.',
+          );
+        } else {
+          setErrorMessage(msg || "Registration failed. Please try again.");
+        }
       } finally {
         setLoading(false);
       }
-
       return;
     }
 
     // Login mode
     try {
       setLoading(true);
-
-      const { data, error } =
-        await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password,
-        });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
 
       if (error) throw error;
 
@@ -399,18 +371,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         try {
           await syncHistoryWithCloud(data.user);
         } catch (syncErr) {
-          console.error('Login history sync error:', syncErr);
+          console.error("Login history sync error:", syncErr);
         }
       }
 
-      onSuccess('Welcome back! Successfully logged in.');
+      onSuccess("Welcome back! Successfully logged in.");
       resetForm();
       onClose();
     } catch (err: unknown) {
-      setErrorMessage(
-        (err as Error).message ||
-          'Invalid email or password. Please verify your credentials.'
-      );
+      const msg = (err as Error).message || "";
+      if (msg.toLowerCase().includes("captcha")) {
+        setErrorMessage(
+          "hCaptcha is disabled in this application. Please disable Captcha in your Supabase Bot Protection settings to allow password login without captcha tokens.",
+        );
+      } else {
+        setErrorMessage(
+          msg || "Invalid email or password. Please verify your credentials.",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -423,9 +401,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
       <div
         className={`relative w-full max-w-md p-6 sm:p-8 rounded-3xl border shadow-2xl overflow-hidden transition-all duration-300 z-10 ${
-          theme === 'dark'
-            ? 'bg-slate-900/90 border-slate-800 text-slate-100'
-            : 'bg-white/95 border-slate-200 text-slate-900'
+          theme === "dark"
+            ? "bg-slate-900/95 border-slate-800 text-slate-100"
+            : "bg-white border-slate-200 text-slate-900 shadow-2xl"
         }`}
       >
         {/* Subtle Ambient Radial Glow */}
@@ -435,7 +413,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition cursor-pointer"
+          className={`absolute top-5 right-5 p-2 rounded-xl transition cursor-pointer ${
+            theme === "dark"
+              ? "text-slate-400 hover:text-white hover:bg-slate-800/60"
+              : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+          }`}
           aria-label="Close modal"
         >
           <X className="w-5 h-5" />
@@ -444,25 +426,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Header Branding */}
         <div className="flex flex-col items-center text-center mb-5">
           <NovaLogo size="sm" showTagline={false} />
-
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-3 text-white">
-            {authMethod === 'phone'
-              ? 'Mobile Number Sign-In'
-              : mode === 'login'
-              ? 'Welcome to NOVA QR'
-              : mode === 'signup'
-              ? 'Create Your Account'
-              : 'Reset Password'}
+          <h2
+            className={`text-xl sm:text-2xl font-black tracking-tight mt-3 ${
+              theme === "dark" ? "text-white" : "text-slate-900"
+            }`}
+          >
+            {authMethod === "phone"
+              ? "Mobile Number Sign-In"
+              : mode === "login"
+                ? "Welcome to NOVA QR"
+                : mode === "signup"
+                  ? "Create Your Account"
+                  : "Reset Password"}
           </h2>
-
-          <p className="text-xs text-slate-400 mt-1 max-w-xs">
-            {authMethod === 'phone'
-              ? 'Instant verification via mobile SMS OTP.'
-              : mode === 'login'
-              ? 'Log in to securely sync your QR codes and preferences.'
-              : mode === 'signup'
-              ? 'Create an account to securely save and access your QR codes anywhere.'
-              : 'Enter your email to receive password recovery instructions.'}
+          <p
+            className={`text-xs mt-1 max-w-xs font-medium ${
+              theme === "dark" ? "text-slate-400" : "text-slate-600"
+            }`}
+          >
+            {authMethod === "phone"
+              ? "Instant verification via mobile SMS OTP."
+              : mode === "login"
+                ? "Log in to securely sync your QR codes and preferences."
+                : mode === "signup"
+                  ? "Create an account to securely save and access your QR codes anywhere."
+                  : "Enter your email to receive password recovery instructions."}
           </p>
         </div>
 
@@ -473,14 +461,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               type="button"
               onClick={handleGitHubSignIn}
               disabled={loading || githubLoading || facebookLoading}
-              className="py-2.5 px-3 rounded-xl border border-slate-800 hover:border-slate-700 bg-slate-950/70 hover:bg-slate-900 text-slate-200 hover:text-white font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed group"
+              className={`py-2.5 px-3 rounded-xl border font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-xs disabled:opacity-60 disabled:cursor-not-allowed group ${
+                theme === "dark"
+                  ? "border-slate-800 hover:border-slate-700 bg-slate-950/70 hover:bg-slate-900 text-slate-200 hover:text-white"
+                  : "border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-800 hover:text-slate-950"
+              }`}
             >
               {githubLoading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+                <Loader2
+                  className={`w-3.5 h-3.5 animate-spin ${theme === "dark" ? "text-cyan-400" : "text-cyan-600"}`}
+                />
               ) : (
-                <Github className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+                <Github
+                  className={`w-3.5 h-3.5 group-hover:scale-110 transition-transform ${
+                    theme === "dark" ? "text-cyan-400" : "text-slate-900"
+                  }`}
+                />
               )}
-
               <span>GitHub</span>
             </button>
 
@@ -488,57 +485,76 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               type="button"
               onClick={handleFacebookSignIn}
               disabled={loading || githubLoading || facebookLoading}
-              className="py-2.5 px-3 rounded-xl border border-slate-800 hover:border-blue-900/60 bg-slate-950/70 hover:bg-blue-950/20 text-slate-200 hover:text-white font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed group"
+              className={`py-2.5 px-3 rounded-xl border font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-xs disabled:opacity-60 disabled:cursor-not-allowed group ${
+                theme === "dark"
+                  ? "border-slate-800 hover:border-blue-900/60 bg-slate-950/70 hover:bg-blue-950/20 text-slate-200 hover:text-white"
+                  : "border-slate-300 hover:border-blue-300 bg-slate-50 hover:bg-blue-50/50 text-slate-800 hover:text-slate-950"
+              }`}
             >
               {facebookLoading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-400" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-500" />
               ) : (
-                <Facebook className="w-3.5 h-3.5 text-blue-500 group-hover:scale-110 transition-transform" />
+                <Facebook className="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform" />
               )}
-
               <span>Facebook</span>
             </button>
           </div>
 
           <div className="relative my-4 flex items-center justify-center">
-            <div className="border-t border-slate-800 w-full" />
-
-            <span className="bg-slate-900 px-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider absolute">
+            <div
+              className={`border-t w-full ${theme === "dark" ? "border-slate-800" : "border-slate-200"}`}
+            />
+            <span
+              className={`px-3 text-[11px] font-bold uppercase tracking-wider absolute ${
+                theme === "dark"
+                  ? "bg-slate-900 text-slate-400"
+                  : "bg-white text-slate-600"
+              }`}
+            >
               or continue with
             </span>
           </div>
         </div>
 
         {/* Primary Method Switcher: Email vs Mobile Number */}
-        <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-slate-950/60 border border-slate-800/80 mb-4">
+        <div
+          className={`grid grid-cols-2 gap-1.5 p-1 rounded-xl border mb-4 ${
+            theme === "dark"
+              ? "bg-slate-950/60 border-slate-800/80"
+              : "bg-slate-100 border-slate-200"
+          }`}
+        >
           <button
             type="button"
             onClick={() => {
-              setAuthMethod('email');
+              setAuthMethod("email");
               setErrorMessage(null);
               setInfoMessage(null);
             }}
             className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              authMethod === 'email'
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md'
-                : 'text-slate-400 hover:text-white'
+              authMethod === "email"
+                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
+                : theme === "dark"
+                  ? "text-slate-400 hover:text-white"
+                  : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <Mail className="w-3.5 h-3.5" />
             <span>Email</span>
           </button>
-
           <button
             type="button"
             onClick={() => {
-              setAuthMethod('phone');
+              setAuthMethod("phone");
               setErrorMessage(null);
               setInfoMessage(null);
             }}
             className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              authMethod === 'phone'
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md'
-                : 'text-slate-400 hover:text-white'
+              authMethod === "phone"
+                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
+                : theme === "dark"
+                  ? "text-slate-400 hover:text-white"
+                  : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <Phone className="w-3.5 h-3.5" />
@@ -548,47 +564,76 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Status Alerts */}
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 animate-fadeIn">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+          <div
+            className={`mb-4 p-3 rounded-xl border text-xs flex items-start gap-2.5 animate-fadeIn ${
+              theme === "dark"
+                ? "bg-rose-950/40 border-rose-500/30 text-rose-300"
+                : "bg-rose-50 border-rose-300 text-rose-800 font-medium"
+            }`}
+          >
+            <AlertCircle
+              className={`w-4 h-4 shrink-0 mt-0.5 ${
+                theme === "dark" ? "text-rose-400" : "text-rose-600"
+              }`}
+            />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {infoMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs flex items-start gap-2.5 animate-fadeIn">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
+          <div
+            className={`mb-4 p-3 rounded-xl border text-xs flex items-start gap-2.5 animate-fadeIn ${
+              theme === "dark"
+                ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-300"
+                : "bg-emerald-50 border-emerald-300 text-emerald-800 font-medium"
+            }`}
+          >
+            <CheckCircle2
+              className={`w-4 h-4 shrink-0 mt-0.5 ${
+                theme === "dark" ? "text-emerald-400" : "text-emerald-600"
+              }`}
+            />
             <span>{infoMessage}</span>
           </div>
         )}
 
-        {/* FORM 1: Mobile Number */}
-        {authMethod === 'phone' && (
+        {/* FORM 1: Mobile Number (SMS OTP) */}
+        {authMethod === "phone" && (
           <div>
-            {phoneStep === 'request' ? (
-              <form
-                onSubmit={handleSendPhoneOtp}
-                className="space-y-4"
-              >
+            {phoneStep === "request" ? (
+              <form onSubmit={handleSendPhoneOtp} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label
+                    className={`block text-xs font-bold mb-1.5 ${
+                      theme === "dark" ? "text-slate-300" : "text-slate-700"
+                    }`}
+                  >
                     Mobile Number (with country code)
                   </label>
-
                   <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-
+                    <Phone
+                      className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                        theme === "dark" ? "text-slate-400" : "text-slate-500"
+                      }`}
+                    />
                     <input
                       type="tel"
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+1 555 123 4567 or +91 9876543210"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition font-mono ${
+                        theme === "dark"
+                          ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                          : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
+                      }`}
                     />
                   </div>
-
-                  <p className="text-[11px] text-slate-400 mt-1.5">
-                    Include your country calling code (e.g. +1 for US, +91 for India).
+                  <p
+                    className={`text-[11px] mt-1.5 ${theme === "dark" ? "text-slate-400" : "text-slate-600"}`}
+                  >
+                    Include your country calling code (e.g. +1 for US, +91 for
+                    India).
                   </p>
                 </div>
 
@@ -611,29 +656,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </button>
               </form>
             ) : (
-              <form
-                onSubmit={handleVerifyPhoneOtp}
-                className="space-y-4"
-              >
+              <form onSubmit={handleVerifyPhoneOtp} className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-semibold text-slate-300">
+                    <label
+                      className={`text-xs font-bold ${
+                        theme === "dark" ? "text-slate-300" : "text-slate-700"
+                      }`}
+                    >
                       Enter 6-Digit SMS OTP
                     </label>
-
                     <button
                       type="button"
-                      onClick={() => setPhoneStep('request')}
-                      className="text-[11px] text-cyan-400 hover:text-cyan-300 transition cursor-pointer flex items-center gap-1"
+                      onClick={() => setPhoneStep("request")}
+                      className={`text-[11px] transition cursor-pointer flex items-center gap-1 font-semibold ${
+                        theme === "dark"
+                          ? "text-cyan-400 hover:text-cyan-300"
+                          : "text-cyan-700 hover:text-cyan-800"
+                      }`}
                     >
                       <RotateCcw className="w-3 h-3" />
                       <span>Change Number</span>
                     </button>
                   </div>
-
                   <div className="relative">
-                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-
+                    <KeyRound
+                      className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                        theme === "dark" ? "text-slate-400" : "text-slate-500"
+                      }`}
+                    />
                     <input
                       type="text"
                       maxLength={8}
@@ -642,13 +693,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value)}
                       placeholder="123456"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 font-mono tracking-widest text-center"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition font-mono tracking-widest text-center ${
+                        theme === "dark"
+                          ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                          : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
+                      }`}
                     />
                   </div>
-
-                  <p className="text-[11px] text-slate-400 mt-1.5 text-center">
-                    Sent to{' '}
-                    <span className="font-mono text-cyan-300">
+                  <p
+                    className={`text-[11px] mt-1.5 text-center ${
+                      theme === "dark" ? "text-slate-400" : "text-slate-600"
+                    }`}
+                  >
+                    Sent to{" "}
+                    <span
+                      className={`font-mono font-bold ${
+                        theme === "dark" ? "text-cyan-300" : "text-cyan-700"
+                      }`}
+                    >
                       {phone}
                     </span>
                   </p>
@@ -677,7 +739,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     type="button"
                     onClick={handleSendPhoneOtp}
                     disabled={loading}
-                    className="text-xs text-slate-400 hover:text-cyan-400 transition cursor-pointer disabled:opacity-50"
+                    className={`text-xs transition cursor-pointer disabled:opacity-50 font-medium ${
+                      theme === "dark"
+                        ? "text-slate-400 hover:text-cyan-400"
+                        : "text-slate-600 hover:text-cyan-700"
+                    }`}
                   >
                     Didn't receive the code? Resend SMS
                   </button>
@@ -688,30 +754,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         )}
 
         {/* FORM 2: Email & Password */}
-        {authMethod === 'email' && (
+        {authMethod === "email" && (
           <div>
-            {/* Mode Switcher Tabs */}
-            {mode !== 'forgot' && (
-              <div className="flex items-center p-1 rounded-xl bg-slate-950/60 border border-slate-800/80 mb-4">
+            {/* Mode Switcher Tabs (Login vs Signup) */}
+            {mode !== "forgot" && (
+              <div
+                className={`flex items-center p-1 rounded-xl border mb-4 ${
+                  theme === "dark"
+                    ? "bg-slate-950/60 border-slate-800/80"
+                    : "bg-slate-100 border-slate-200"
+                }`}
+              >
                 <button
                   type="button"
-                  onClick={() => handleSwitchMode('login')}
+                  onClick={() => handleSwitchMode("login")}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    mode === 'login'
-                      ? 'bg-slate-800 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white'
+                    mode === "login"
+                      ? theme === "dark"
+                        ? "bg-slate-800 text-white shadow-xs"
+                        : "bg-white text-slate-900 shadow-xs border border-slate-200"
+                      : theme === "dark"
+                        ? "text-slate-400 hover:text-white"
+                        : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
                   Log In
                 </button>
-
                 <button
                   type="button"
-                  onClick={() => handleSwitchMode('signup')}
+                  onClick={() => handleSwitchMode("signup")}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    mode === 'signup'
-                      ? 'bg-slate-800 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white'
+                    mode === "signup"
+                      ? theme === "dark"
+                        ? "bg-slate-800 text-white shadow-xs"
+                        : "bg-white text-slate-900 shadow-xs border border-slate-200"
+                      : theme === "dark"
+                        ? "text-slate-400 hover:text-white"
+                        : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
                   Sign Up
@@ -719,100 +798,138 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
             )}
 
-            <form
-              onSubmit={handleEmailSubmit}
-              className="space-y-4"
-            >
-              {mode === 'signup' && (
+            <form onSubmit={handleEmailSubmit} className="space-y-4">
+              {mode === "signup" && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label
+                    className={`block text-xs font-bold mb-1.5 ${
+                      theme === "dark" ? "text-slate-300" : "text-slate-700"
+                    }`}
+                  >
                     Full Name
                   </label>
-
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-
+                    <User
+                      className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                        theme === "dark" ? "text-slate-400" : "text-slate-500"
+                      }`}
+                    />
                     <input
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="e.g. Arpan Goswami"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition ${
+                        theme === "dark"
+                          ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                          : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
+                      }`}
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label
+                  className={`block text-xs font-bold mb-1.5 ${
+                    theme === "dark" ? "text-slate-300" : "text-slate-700"
+                  }`}
+                >
                   Email Address
                 </label>
-
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-
+                  <Mail
+                    className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                      theme === "dark" ? "text-slate-400" : "text-slate-500"
+                    }`}
+                  />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition ${
+                      theme === "dark"
+                        ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                        : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
+                    }`}
                   />
                 </div>
               </div>
 
-              {mode !== 'forgot' && (
+              {mode !== "forgot" && (
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-semibold text-slate-300">
+                    <label
+                      className={`text-xs font-bold ${
+                        theme === "dark" ? "text-slate-300" : "text-slate-700"
+                      }`}
+                    >
                       Password
                     </label>
-
-                    {mode === 'login' && (
+                    {mode === "login" && (
                       <button
                         type="button"
-                        onClick={() => handleSwitchMode('forgot')}
-                        className="text-[11px] text-cyan-400 hover:text-cyan-300 transition cursor-pointer"
+                        onClick={() => handleSwitchMode("forgot")}
+                        className={`text-[11px] font-semibold transition cursor-pointer ${
+                          theme === "dark"
+                            ? "text-cyan-400 hover:text-cyan-300"
+                            : "text-cyan-700 hover:text-cyan-800"
+                        }`}
                       >
                         Forgot Password?
                       </button>
                     )}
                   </div>
-
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-
+                    <Lock
+                      className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                        theme === "dark" ? "text-slate-400" : "text-slate-500"
+                      }`}
+                    />
                     <input
                       type="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="At least 6 characters"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition ${
+                        theme === "dark"
+                          ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                          : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
+                      }`}
                     />
                   </div>
                 </div>
               )}
 
-              {mode === 'signup' && (
+              {mode === "signup" && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label
+                    className={`block text-xs font-bold mb-1.5 ${
+                      theme === "dark" ? "text-slate-300" : "text-slate-700"
+                    }`}
+                  >
                     Confirm Password
                   </label>
-
                   <div className="relative">
-                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-
+                    <KeyRound
+                      className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                        theme === "dark" ? "text-slate-400" : "text-slate-500"
+                      }`}
+                    />
                     <input
                       type="password"
                       required
                       value={confirmPassword}
-                      onChange={(e) =>
-                        setConfirmPassword(e.target.value)
-                      }
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Repeat your password"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition bg-slate-950/60 border border-slate-800 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition ${
+                        theme === "dark"
+                          ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                          : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
+                      }`}
                     />
                   </div>
                 </div>
@@ -832,11 +949,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 ) : (
                   <>
                     <span>
-                      {mode === 'login' && 'Log In with Email'}
-                      {mode === 'signup' && 'Create Account'}
-                      {mode === 'forgot' && 'Send Recovery Email'}
+                      {mode === "login" && "Log In with Email"}
+                      {mode === "signup" && "Create Account"}
+                      {mode === "forgot" && "Send Recovery Email"}
                     </span>
-
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -844,33 +960,51 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </form>
 
             {/* Footer Toggle / Navigation */}
-            <div className="mt-4 pt-3 border-t border-slate-800/60 text-center text-xs text-slate-400">
-              {mode === 'forgot' ? (
+            <div
+              className={`mt-4 pt-3 border-t text-center text-xs ${
+                theme === "dark"
+                  ? "border-slate-800/60 text-slate-400"
+                  : "border-slate-200 text-slate-600"
+              }`}
+            >
+              {mode === "forgot" ? (
                 <button
                   type="button"
-                  onClick={() => handleSwitchMode('login')}
-                  className="text-cyan-400 hover:text-cyan-300 font-semibold transition cursor-pointer"
+                  onClick={() => handleSwitchMode("login")}
+                  className={`font-bold transition cursor-pointer ${
+                    theme === "dark"
+                      ? "text-cyan-400 hover:text-cyan-300"
+                      : "text-cyan-700 hover:text-cyan-800"
+                  }`}
                 >
                   Back to Log In
                 </button>
-              ) : mode === 'login' ? (
+              ) : mode === "login" ? (
                 <span>
-                  Don't have an account yet?{' '}
+                  Don't have an account yet?{" "}
                   <button
                     type="button"
-                    onClick={() => handleSwitchMode('signup')}
-                    className="text-cyan-400 hover:text-cyan-300 font-bold transition cursor-pointer underline underline-offset-2"
+                    onClick={() => handleSwitchMode("signup")}
+                    className={`font-bold transition cursor-pointer underline underline-offset-2 ${
+                      theme === "dark"
+                        ? "text-cyan-400 hover:text-cyan-300"
+                        : "text-cyan-700 hover:text-cyan-800"
+                    }`}
                   >
                     Sign Up
                   </button>
                 </span>
               ) : (
                 <span>
-                  Already registered?{' '}
+                  Already registered?{" "}
                   <button
                     type="button"
-                    onClick={() => handleSwitchMode('login')}
-                    className="text-cyan-400 hover:text-cyan-300 font-bold transition cursor-pointer underline underline-offset-2"
+                    onClick={() => handleSwitchMode("login")}
+                    className={`font-bold transition cursor-pointer underline underline-offset-2 ${
+                      theme === "dark"
+                        ? "text-cyan-400 hover:text-cyan-300"
+                        : "text-cyan-700 hover:text-cyan-800"
+                    }`}
                   >
                     Log In
                   </button>
@@ -883,8 +1017,3 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     </div>
   );
 };
-```
-
-**After pasting:** save the file, then disable **hCaptcha/CAPTCHA in Supabase Authentication settings**. You can leave `HCaptchaWidget.tsx` for now; it won't be imported by this file anymore.
-
-One more thing: **your resend SMS button calls `handleSendPhoneOtp`, so that's still fine after removing hCaptcha.**

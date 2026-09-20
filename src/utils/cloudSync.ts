@@ -91,14 +91,20 @@ export async function syncHistoryWithCloud(user: User): Promise<SyncResult> {
     // 1. Update local storage
     setStoredHistory(merged);
 
-    // 2. Push merged state back to user metadata in Supabase
-    await supabase.auth.updateUser({
-      data: {
-        synced_history: merged,
-        last_synced_at: new Date().toISOString(),
-        total_synced_history_count: merged.length,
-      },
-    });
+    // 2. Push merged state back to user metadata in Supabase (if online session)
+    if (!user.id.startsWith('local_usr_')) {
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            synced_history: merged,
+            last_synced_at: new Date().toISOString(),
+            total_synced_history_count: merged.length,
+          },
+        });
+      } catch (cloudPushErr) {
+        console.warn('Could not push metadata to cloud:', cloudPushErr);
+      }
+    }
 
     return {
       success: true,

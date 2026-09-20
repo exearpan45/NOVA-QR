@@ -36,6 +36,7 @@ import { AboutView } from './components/AboutView';
 import { ToastContainer } from './components/ToastContainer';
 import { AuthModal } from './components/AuthModal';
 import { CustomQRDesigner } from './components/CustomQRDesigner';
+import { ChatbotWidget } from './components/ChatbotWidget';
 import { syncHistoryWithCloud } from './utils/cloudSync';
 import {
   QrCode,
@@ -100,26 +101,6 @@ export default function App() {
       subscription.unsubscribe();
     };
   }, []);
-
-  // Trigger login/signup popup modal when a visitor scrolls down
-  useEffect(() => {
-    if (user || showSplash) return;
-
-    const alreadyPrompted = sessionStorage.getItem('nova_scroll_auth_prompted') === 'true';
-    if (alreadyPrompted) return;
-
-    const handleScroll = () => {
-      if (window.scrollY > 160) {
-        setAuthModalMode('signup');
-        setAuthModalOpen(true);
-        sessionStorage.setItem('nova_scroll_auth_prompted', 'true');
-        window.removeEventListener('scroll', handleScroll);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [user, showSplash]);
 
   // Initial load
   useEffect(() => {
@@ -260,13 +241,17 @@ export default function App() {
       {/* Animated Splash Screen at startup */}
       {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
 
-      {/* Cybernetic background ambient effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className={`absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full blur-[140px] opacity-25 ${
-          theme === 'dark' ? 'bg-cyan-500/20' : 'bg-cyan-200/50'
+      {/* Cybernetic background ambient effects - hardware-accelerated radial gradients for maximum mobile performance */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 transform-gpu">
+        <div className={`absolute -top-40 left-1/2 -translate-x-1/2 w-[650px] h-[450px] rounded-full ${
+          theme === 'dark'
+            ? 'bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.12)_0%,rgba(6,182,212,0.03)_50%,transparent_70%)]'
+            : 'bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.10)_0%,rgba(6,182,212,0.02)_50%,transparent_70%)]'
         }`} />
-        <div className={`absolute top-1/3 -left-40 w-[450px] h-[450px] rounded-full blur-[120px] opacity-20 ${
-          theme === 'dark' ? 'bg-purple-600/20' : 'bg-purple-200/40'
+        <div className={`absolute top-1/3 -left-32 w-[400px] h-[400px] rounded-full ${
+          theme === 'dark'
+            ? 'bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.10)_0%,rgba(168,85,247,0.02)_50%,transparent_70%)]'
+            : 'bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.08)_0%,rgba(168,85,247,0.01)_50%,transparent_70%)]'
         }`} />
       </div>
 
@@ -413,12 +398,14 @@ export default function App() {
 
       {/* Mobile Bottom Quick Navigation Bar */}
       <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-30 border-t backdrop-blur-xl px-2 py-1.5 flex items-center justify-around ${
-        theme === 'dark' ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-slate-200 shadow-md'
+        theme === 'dark' ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-300 shadow-lg'
       }`}>
         <button
           onClick={() => setCurrentTab('generator')}
           className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
-            currentTab === 'generator' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            currentTab === 'generator'
+              ? theme === 'dark' ? 'text-cyan-400 font-bold' : 'text-cyan-700 font-bold'
+              : theme === 'dark' ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <QrCode className="w-4 h-4" />
@@ -428,7 +415,9 @@ export default function App() {
         <button
           onClick={() => setCurrentTab('dynamic')}
           className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
-            currentTab === 'dynamic' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            currentTab === 'dynamic'
+              ? theme === 'dark' ? 'text-cyan-400 font-bold' : 'text-cyan-700 font-bold'
+              : theme === 'dark' ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Link2 className="w-4 h-4" />
@@ -438,7 +427,9 @@ export default function App() {
         <button
           onClick={() => setCurrentTab('analytics')}
           className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
-            currentTab === 'analytics' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            currentTab === 'analytics'
+              ? theme === 'dark' ? 'text-cyan-400 font-bold' : 'text-cyan-700 font-bold'
+              : theme === 'dark' ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <TrendingUp className="w-4 h-4" />
@@ -448,7 +439,9 @@ export default function App() {
         <button
           onClick={() => setCurrentTab('bio')}
           className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
-            currentTab === 'bio' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            currentTab === 'bio'
+              ? theme === 'dark' ? 'text-cyan-400 font-bold' : 'text-cyan-700 font-bold'
+              : theme === 'dark' ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <Smartphone className="w-4 h-4" />
@@ -458,7 +451,9 @@ export default function App() {
         <button
           onClick={() => setCurrentTab('history')}
           className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl transition cursor-pointer ${
-            currentTab === 'history' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            currentTab === 'history'
+              ? theme === 'dark' ? 'text-cyan-400 font-bold' : 'text-cyan-700 font-bold'
+              : theme === 'dark' ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'
           }`}
         >
           <History className="w-4 h-4" />
@@ -477,6 +472,9 @@ export default function App() {
 
       {/* Footer */}
       <Footer onTabChange={setCurrentTab} theme={theme} />
+
+      {/* Chatbot on left side */}
+      <ChatbotWidget theme={theme} onNavigateTab={(tab) => setCurrentTab(tab)} />
 
       {/* Toast Notification Container */}
       <ToastContainer toasts={toasts} onDismiss={handleDismissToast} />

@@ -182,13 +182,15 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
       <div className={sectionCardClass}>
         <div className="flex items-center justify-between mb-2.5">
           <span className={headerClass}>
-            <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
+            <Briefcase className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
             Brand Kits & Profiles
           </span>
           <button
             type="button"
             onClick={() => setIsSavingBrandKit(!isSavingBrandKit)}
-            className="flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 transition cursor-pointer font-medium"
+            className={`flex items-center gap-1 text-xs transition cursor-pointer font-semibold ${
+              theme === 'dark' ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-700 hover:text-cyan-800'
+            }`}
           >
             <BookmarkPlus className="w-3 h-3" />
             <span>{isSavingBrandKit ? 'Cancel' : 'Save As Brand Kit'}</span>
@@ -197,21 +199,31 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
 
         {/* Save Kit Inline Form */}
         {isSavingBrandKit && (
-          <form onSubmit={handleSaveCurrentAsBrandKit} className="mb-3 p-3 rounded-xl bg-slate-950/70 border border-cyan-500/30 space-y-2">
-            <p className="text-[11px] text-slate-300 font-medium">Save current colors, pattern geometry, and logo as a reusable Brand Kit:</p>
+          <form onSubmit={handleSaveCurrentAsBrandKit} className={`mb-3 p-3 rounded-xl border space-y-2 ${
+            theme === 'dark'
+              ? 'bg-slate-950/70 border-cyan-500/30'
+              : 'bg-white border-cyan-400/60 shadow-xs'
+          }`}>
+            <p className={`text-[11px] font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+              Save current colors, pattern geometry, and logo as a reusable Brand Kit:
+            </p>
             <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="Brand Name (e.g., Acme Blue)"
                 value={brandKitNameInput}
                 onChange={(e) => setBrandKitNameInput(e.target.value)}
-                className="flex-1 px-3 py-1.5 rounded-lg text-xs bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-cyan-400"
+                className={`flex-1 px-3 py-1.5 rounded-lg text-xs outline-none transition ${
+                  theme === 'dark'
+                    ? 'bg-slate-900 border border-slate-700 text-white focus:border-cyan-400'
+                    : 'bg-slate-50 border border-slate-300 text-slate-900 focus:border-cyan-600'
+                }`}
                 autoFocus
               />
               <button
                 type="submit"
                 disabled={!brandKitNameInput.trim()}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300 disabled:opacity-50 transition cursor-pointer flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 hover:bg-cyan-400 disabled:opacity-50 transition cursor-pointer flex items-center gap-1 shadow-xs"
               >
                 <Check className="w-3 h-3" />
                 <span>Save</span>
@@ -260,13 +272,15 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
       <div className={sectionCardClass}>
         <div className="flex items-center justify-between mb-2.5">
           <span className={headerClass}>
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <Sparkles className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
             Designer Presets
           </span>
           <button
             id="btn-reset-style"
             onClick={onReset}
-            className="flex items-center gap-1 text-xs text-slate-400 hover:text-cyan-400 transition cursor-pointer"
+            className={`flex items-center gap-1 text-xs transition cursor-pointer font-semibold ${
+              theme === 'dark' ? 'text-slate-400 hover:text-cyan-400' : 'text-slate-600 hover:text-cyan-700'
+            }`}
             title="Reset to default theme"
           >
             <RotateCcw className="w-3 h-3" />
@@ -288,14 +302,16 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                 onClick={() => handleApplyPreset(key)}
                 className={`relative flex items-center gap-2.5 p-2 rounded-xl border text-left text-xs transition cursor-pointer ${
                   isSelected
-                    ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300 ring-1 ring-cyan-400/30 font-semibold'
+                    ? theme === 'dark'
+                      ? 'border-cyan-400 bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-400/30 font-bold'
+                      : 'border-cyan-500 bg-cyan-50 text-cyan-800 ring-1 ring-cyan-500/40 font-bold shadow-xs'
                     : theme === 'dark'
                     ? 'border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                    : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 <div
-                  className="w-4 h-4 rounded-full border border-white/20 shrink-0 shadow-xs"
+                  className="w-4 h-4 rounded-full border border-slate-300/40 shrink-0 shadow-xs"
                   style={{ backgroundColor: preset.fgColor }}
                 />
                 <div className="truncate">
@@ -310,14 +326,20 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
       {/* Colors & Palette */}
       <div className={sectionCardClass}>
         <span className={headerClass}>
-          <Palette className="w-3.5 h-3.5 text-cyan-400" />
+          <Palette className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
           Color Calibration
         </span>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Foreground */}
-          <div className="flex items-center justify-between p-2.5 rounded-xl border border-slate-700/50 bg-slate-900/30">
-            <span className="text-xs font-medium text-slate-300">QR Pattern</span>
+          <div className={`flex items-center justify-between p-2.5 rounded-xl border transition ${
+            theme === 'dark'
+              ? 'border-slate-700/50 bg-slate-900/40'
+              : 'border-slate-200 bg-white shadow-xs'
+          }`}>
+            <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-800'}`}>
+              QR Pattern
+            </span>
             <div className="flex items-center gap-2">
               <input
                 id="color-fg"
@@ -326,15 +348,23 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                 onChange={(e) => onChange({ ...styleConfig, fgColor: e.target.value })}
                 className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
               />
-              <span className="text-xs font-mono text-slate-400 uppercase">
+              <span className={`text-xs font-mono uppercase font-bold ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-700'
+              }`}>
                 {styleConfig.fgColor}
               </span>
             </div>
           </div>
 
           {/* Background */}
-          <div className="flex items-center justify-between p-2.5 rounded-xl border border-slate-700/50 bg-slate-900/30">
-            <span className="text-xs font-medium text-slate-300">Background</span>
+          <div className={`flex items-center justify-between p-2.5 rounded-xl border transition ${
+            theme === 'dark'
+              ? 'border-slate-700/50 bg-slate-900/40'
+              : 'border-slate-200 bg-white shadow-xs'
+          }`}>
+            <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-800'}`}>
+              Background
+            </span>
             <div className="flex items-center gap-2">
               <input
                 id="color-bg"
@@ -343,7 +373,9 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                 onChange={(e) => onChange({ ...styleConfig, bgColor: e.target.value })}
                 className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0"
               />
-              <span className="text-xs font-mono text-slate-400 uppercase">
+              <span className={`text-xs font-mono uppercase font-bold ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-700'
+              }`}>
                 {styleConfig.bgColor}
               </span>
             </div>
@@ -354,14 +386,16 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
       {/* Shapes & Pattern Geometry */}
       <div className={sectionCardClass}>
         <span className={headerClass}>
-          <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+          <Sliders className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
           Pattern Geometry
         </span>
 
         <div className="space-y-3">
           {/* Dot Style */}
           <div>
-            <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1.5">
+            <label className={`block text-[11px] font-bold uppercase mb-1.5 ${
+              theme === 'dark' ? 'text-slate-400' : 'text-slate-700'
+            }`}>
               Data Modules Style
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
@@ -372,10 +406,12 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                   onClick={() => onChange({ ...styleConfig, dotType: dot.id })}
                   className={`py-1.5 px-2 rounded-lg text-xs font-medium transition cursor-pointer border ${
                     styleConfig.dotType === dot.id
-                      ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                      ? theme === 'dark'
+                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                        : 'bg-cyan-50 border-cyan-500 text-cyan-800 font-bold shadow-xs'
                       : theme === 'dark'
                       ? 'border-slate-800 bg-slate-900/60 text-slate-400 hover:text-slate-200'
-                      : 'border-slate-200 bg-white text-slate-600 hover:text-slate-900'
+                      : 'border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:border-slate-300'
                   }`}
                 >
                   {dot.label}
@@ -387,7 +423,9 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
           {/* Corner Square Style */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1.5">
+              <label className={`block text-[11px] font-bold uppercase mb-1.5 ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-700'
+              }`}>
                 Corner Frame
               </label>
               <div className="grid grid-cols-3 gap-1.5">
@@ -397,10 +435,12 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                     onClick={() => onChange({ ...styleConfig, cornerSquareType: cs.id })}
                     className={`py-1.5 px-2 rounded-lg text-xs font-medium transition cursor-pointer border text-center ${
                       styleConfig.cornerSquareType === cs.id
-                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                        ? theme === 'dark'
+                          ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                          : 'bg-cyan-50 border-cyan-500 text-cyan-800 font-bold shadow-xs'
                         : theme === 'dark'
                         ? 'border-slate-800 bg-slate-900/60 text-slate-400'
-                        : 'border-slate-200 bg-white text-slate-600'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     {cs.label}
@@ -410,7 +450,9 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1.5">
+              <label className={`block text-[11px] font-bold uppercase mb-1.5 ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-700'
+              }`}>
                 Corner Eye
               </label>
               <div className="grid grid-cols-2 gap-1.5">
@@ -420,10 +462,12 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                     onClick={() => onChange({ ...styleConfig, cornerDotType: cd.id })}
                     className={`py-1.5 px-2 rounded-lg text-xs font-medium transition cursor-pointer border text-center ${
                       styleConfig.cornerDotType === cd.id
-                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                        ? theme === 'dark'
+                          ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                          : 'bg-cyan-50 border-cyan-500 text-cyan-800 font-bold shadow-xs'
                         : theme === 'dark'
                         ? 'border-slate-800 bg-slate-900/60 text-slate-400'
-                        : 'border-slate-200 bg-white text-slate-600'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     {cd.label}
@@ -439,14 +483,14 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
       <div className={sectionCardClass}>
         <div className="flex items-center justify-between mb-2">
           <span className={headerClass}>
-            <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+            <ImageIcon className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
             Center Logo / Icon
           </span>
           {styleConfig.logoUrl && (
             <button
               id="btn-remove-logo"
               onClick={handleRemoveLogo}
-              className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 transition cursor-pointer"
+              className="flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition cursor-pointer font-medium"
             >
               <Trash2 className="w-3 h-3" />
               <span>Remove</span>
@@ -469,19 +513,19 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
               className={`w-full py-4 px-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 transition cursor-pointer ${
                 theme === 'dark'
                   ? 'border-slate-700/80 hover:border-cyan-400/60 bg-slate-900/30 text-slate-300'
-                  : 'border-slate-300 hover:border-cyan-500 bg-white text-slate-600'
+                  : 'border-slate-300 hover:border-cyan-600 bg-white text-slate-700 shadow-xs'
               }`}
             >
-              <Upload className="w-5 h-5 text-cyan-400" />
+              <Upload className={`w-5 h-5 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
               <div className="text-xs font-medium">
-                <span className="text-cyan-400 font-semibold">Click to upload brand logo</span> (PNG, JPG, SVG)
+                <span className={`font-bold ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'}`}>Click to upload brand logo</span> (PNG, JPG, SVG)
               </div>
-              <p className="text-[11px] text-slate-500">Processed locally inside your browser</p>
+              <p className={`text-[11px] ${theme === 'dark' ? 'text-slate-500' : 'text-slate-600'}`}>Processed locally inside your browser</p>
             </button>
 
             {/* Quick Brand Icon Library */}
             <div className="mt-2.5">
-              <p className="text-[11px] font-medium text-slate-400 mb-1.5">Or choose a sample brand emblem:</p>
+              <p className={`text-[11px] font-medium mb-1.5 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-700'}`}>Or choose a sample brand emblem:</p>
               <div className="grid grid-cols-4 gap-1.5">
                 {[
                   {
@@ -505,10 +549,16 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                     key={item.name}
                     type="button"
                     onClick={() => onChange({ ...styleConfig, logoUrl: item.url, errorCorrection: 'H' })}
-                    className="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-900/60 border border-slate-800 hover:border-cyan-400/50 transition cursor-pointer text-left"
+                    className={`flex items-center gap-1.5 p-1.5 rounded-lg border transition cursor-pointer text-left ${
+                      theme === 'dark'
+                        ? 'bg-slate-900/60 border-slate-800 hover:border-cyan-400/50'
+                        : 'bg-white border-slate-200 hover:border-cyan-500 shadow-xs'
+                    }`}
                   >
                     <img src={item.url} alt={item.name} className="w-5 h-5 object-contain shrink-0" />
-                    <span className="text-[10px] text-slate-300 truncate">{item.name}</span>
+                    <span className={`text-[10px] font-medium truncate ${
+                      theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
+                    }`}>{item.name}</span>
                   </button>
                 ))}
               </div>
@@ -516,23 +566,37 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div className={`flex items-center gap-3 p-2.5 rounded-xl border ${
+              theme === 'dark'
+                ? 'bg-slate-900/60 border-slate-800'
+                : 'bg-white border-slate-200 shadow-xs'
+            }`}>
               <img
                 src={styleConfig.logoUrl}
                 alt="Center Logo Preview"
-                className="w-12 h-12 object-contain rounded-lg bg-white/10 p-1 border border-white/20 shrink-0"
+                className={`w-12 h-12 object-contain rounded-lg p-1 border shrink-0 ${
+                  theme === 'dark' ? 'bg-white/10 border-white/20' : 'bg-slate-50 border-slate-200'
+                }`}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-slate-200">Embedded Logo Active</p>
-                <p className="text-[11px] text-slate-400">Fault tolerance automatically set to High (H)</p>
+                <p className={`text-xs font-bold ${theme === 'dark' ? 'text-slate-200' : 'text-slate-900'}`}>
+                  Embedded Logo Active
+                </p>
+                <p className={`text-[11px] font-medium ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Fault tolerance automatically set to High (H)
+                </p>
               </div>
             </div>
 
             {/* Logo Size Slider */}
             <div>
-              <div className="flex justify-between items-center text-xs text-slate-300 mb-1">
+              <div className={`flex justify-between items-center text-xs mb-1 font-semibold ${
+                theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
+              }`}>
                 <span>Logo Proportion</span>
-                <span className="font-mono text-cyan-400">
+                <span className={`font-mono font-bold ${
+                  theme === 'dark' ? 'text-cyan-400' : 'text-cyan-700'
+                }`}>
                   {Math.round((styleConfig.logoSize ?? 0.25) * 100)}%
                 </span>
               </div>
@@ -549,14 +613,20 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
                     logoSize: parseFloat(e.target.value),
                   })
                 }
-                className="w-full accent-cyan-400 cursor-pointer"
+                className="w-full accent-cyan-500 cursor-pointer"
               />
             </div>
 
             {/* Warning if logo is too large */}
             {isLogoTooLarge && (
-              <div className="flex items-start gap-2 p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300 text-xs">
-                <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
+              <div className={`flex items-start gap-2 p-2.5 rounded-xl text-xs ${
+                theme === 'dark'
+                  ? 'bg-amber-950/40 border border-amber-500/30 text-amber-300'
+                  : 'bg-amber-50 border border-amber-300 text-amber-900'
+              }`}>
+                <AlertTriangle className={`w-4 h-4 shrink-0 mt-0.5 ${
+                  theme === 'dark' ? 'text-amber-400' : 'text-amber-600'
+                }`} />
                 <span>
                   <strong>Readability Alert:</strong> A logo size above 30% might hinder scanning on older cameras. Test scan before printing.
                 </span>
@@ -570,7 +640,7 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
       <div className={sectionCardClass}>
         <div className="flex items-center justify-between mb-2">
           <span className={headerClass}>
-            <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+            <ShieldCheck className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-600'}`} />
             Fault Tolerance (Error Correction)
           </span>
         </div>
@@ -582,14 +652,18 @@ export const StyleCustomizer: React.FC<StyleCustomizerProps> = ({
               onClick={() => onChange({ ...styleConfig, errorCorrection: ec.id })}
               className={`p-2 rounded-xl text-xs font-medium border text-left transition cursor-pointer ${
                 styleConfig.errorCorrection === ec.id
-                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                  ? theme === 'dark'
+                    ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 font-bold'
+                    : 'bg-cyan-50 border-cyan-500 text-cyan-800 font-bold shadow-xs'
                   : theme === 'dark'
                   ? 'border-slate-800 bg-slate-900/60 text-slate-400'
-                  : 'border-slate-200 bg-white text-slate-600'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
               }`}
             >
-              <div className="font-semibold">{ec.label}</div>
-              <div className="text-[10px] text-slate-500 leading-tight mt-0.5">{ec.desc}</div>
+              <div className="font-bold">{ec.label}</div>
+              <div className={`text-[10px] leading-tight mt-0.5 ${
+                theme === 'dark' ? 'text-slate-500' : 'text-slate-600'
+              }`}>{ec.desc}</div>
             </button>
           ))}
         </div>

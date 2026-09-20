@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/NOVA-QR/',
+    base: process.env.GITHUB_ACTIONS ? '/NOVA-QR/' : './',
 
     plugins: [react(), tailwindcss()],
 

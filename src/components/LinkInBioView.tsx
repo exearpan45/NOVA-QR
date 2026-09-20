@@ -187,24 +187,42 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
     },
   }[profile.theme || 'cyan'];
 
+  const isDark = theme === 'dark';
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       {/* Header Banner */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-cyan-950/40 border border-slate-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className={`p-6 rounded-3xl border shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+        isDark
+          ? 'bg-gradient-to-r from-slate-900 via-slate-900/90 to-cyan-950/40 border-slate-800'
+          : 'bg-gradient-to-r from-white via-slate-50 to-cyan-50/50 border-slate-200'
+      }`}>
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+            <span className={`px-2.5 py-0.5 rounded-full border text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${
+              isDark
+                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
+                : 'bg-cyan-50 text-cyan-800 border-cyan-300'
+            }`}>
               <Sparkles className="w-3 h-3" />
               Digital Business Card & Bio
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+            <span className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
+              isDark
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                : 'bg-emerald-50 text-emerald-800 border-emerald-300'
+            }`}>
               1-Click vCard Save
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${
+            isDark ? 'text-white' : 'text-slate-900'
+          }`}>
             Link-in-Bio Landing Page Builder
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+          <p className={`text-xs sm:text-sm mt-1 max-w-2xl ${
+            isDark ? 'text-slate-400' : 'text-slate-600'
+          }`}>
             Design an interactive digital business card with quick contact actions, social icons, and portfolio links, paired with a custom-styled QR code.
           </p>
         </div>
@@ -212,9 +230,13 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={handleCopyBioUrl}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold transition cursor-pointer"
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition cursor-pointer border ${
+              isDark
+                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-xs'
+            }`}
           >
-            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
             <span>Copy Bio URL</span>
           </button>
           <button
@@ -232,7 +254,9 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
         {/* Left Column (7 cols): Builder Form Tabs */}
         <div className="lg:col-span-7 space-y-4">
           {/* Sub Navigation */}
-          <div className="grid grid-cols-4 gap-1 p-1 rounded-2xl bg-slate-900/80 border border-slate-800">
+          <div className={`grid grid-cols-4 gap-1 p-1 rounded-2xl border shadow-xs ${
+            isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-100 border-slate-200'
+          }`}>
             {[
               { id: 'profile', label: 'Identity', icon: User },
               { id: 'links', label: 'Links & CTAs', icon: Globe },
@@ -248,7 +272,9 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
                   className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
                     isActive
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md'
-                      : 'text-slate-400 hover:text-white'
+                      : isDark
+                      ? 'text-slate-400 hover:text-white'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -260,15 +286,21 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
 
           {/* Tab 1: Profile & Identity */}
           {activeTab === 'profile' && (
-            <div className="p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <User className="w-4 h-4 text-cyan-400" />
+            <div className={`p-5 sm:p-6 rounded-3xl border shadow-xs space-y-4 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
+              <h2 className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
+                <User className={`w-4 h-4 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                 Personal & Brand Identity
               </h2>
 
               {/* Theme Color Picker */}
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-2">
+                <label className={`block text-[11px] font-semibold uppercase mb-2 ${
+                  isDark ? 'text-slate-400' : 'text-slate-700'
+                }`}>
                   Visual Theme & Color Accent
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -286,11 +318,15 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
                       onClick={() => handleUpdateField('theme', th.id as any)}
                       className={`p-2 rounded-xl border text-center transition cursor-pointer flex flex-col items-center gap-1.5 ${
                         profile.theme === th.id
-                          ? 'border-cyan-400 bg-cyan-500/10 ring-1 ring-cyan-400/40'
-                          : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700'
+                          ? isDark
+                            ? 'border-cyan-400 bg-cyan-500/10 ring-1 ring-cyan-400/40 text-cyan-300'
+                            : 'border-cyan-600 bg-cyan-50 ring-1 ring-cyan-500/40 text-cyan-900 font-bold'
+                          : isDark
+                          ? 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700'
+                          : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300'
                       }`}
                     >
-                      <div className="w-4 h-4 rounded-full border border-white/20" style={{ backgroundColor: th.color }} />
+                      <div className="w-4 h-4 rounded-full border border-black/10 shadow-xs" style={{ backgroundColor: th.color }} />
                       <span className="text-[10px] font-medium truncate">{th.label}</span>
                     </button>
                   ))}
@@ -299,27 +335,39 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1">
+                  <label className={`block text-[11px] font-semibold uppercase mb-1 ${
+                    isDark ? 'text-slate-400' : 'text-slate-700'
+                  }`}>
                     Full Name *
                   </label>
                   <input
                     type="text"
                     value={profile.name}
                     onChange={(e) => handleUpdateField('name', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"
+                    className={`w-full px-3 py-2 rounded-xl border text-xs focus:outline-none ${
+                      isDark
+                        ? 'bg-slate-950 border-slate-700 text-white focus:border-cyan-400'
+                        : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                    }`}
                     placeholder="Arpan Goswami"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1">
+                  <label className={`block text-[11px] font-semibold uppercase mb-1 ${
+                    isDark ? 'text-slate-400' : 'text-slate-700'
+                  }`}>
                     Job Title / Specialty *
                   </label>
                   <input
                     type="text"
                     value={profile.title}
                     onChange={(e) => handleUpdateField('title', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"
+                    className={`w-full px-3 py-2 rounded-xl border text-xs focus:outline-none ${
+                      isDark
+                        ? 'bg-slate-950 border-slate-700 text-white focus:border-cyan-400'
+                        : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                    }`}
                     placeholder="Full Stack & AI Engineer"
                   />
                 </div>
@@ -327,54 +375,78 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1">
+                  <label className={`block text-[11px] font-semibold uppercase mb-1 ${
+                    isDark ? 'text-slate-400' : 'text-slate-700'
+                  }`}>
                     Company / Organization
                   </label>
                   <input
                     type="text"
                     value={profile.company || ''}
                     onChange={(e) => handleUpdateField('company', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"
+                    className={`w-full px-3 py-2 rounded-xl border text-xs focus:outline-none ${
+                      isDark
+                        ? 'bg-slate-950 border-slate-700 text-white focus:border-cyan-400'
+                        : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                    }`}
                     placeholder="NOVA Systems"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1">
+                  <label className={`block text-[11px] font-semibold uppercase mb-1 ${
+                    isDark ? 'text-slate-400' : 'text-slate-700'
+                  }`}>
                     Custom Handle / Slug
                   </label>
                   <input
                     type="text"
                     value={profile.slug}
                     onChange={(e) => handleUpdateField('slug', e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono text-cyan-400 focus:outline-none focus:border-cyan-400"
+                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono focus:outline-none ${
+                      isDark
+                        ? 'bg-slate-950 border-slate-700 text-cyan-400 focus:border-cyan-400'
+                        : 'bg-slate-50 border-slate-300 text-cyan-800 font-semibold focus:border-cyan-600'
+                    }`}
                     placeholder="arpan-goswami"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1">
+                <label className={`block text-[11px] font-semibold uppercase mb-1 ${
+                  isDark ? 'text-slate-400' : 'text-slate-700'
+                }`}>
                   Bio / Tagline
                 </label>
                 <textarea
                   rows={2}
                   value={profile.bio}
                   onChange={(e) => handleUpdateField('bio', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className={`w-full px-3 py-2 rounded-xl border text-xs focus:outline-none ${
+                    isDark
+                      ? 'bg-slate-950 border-slate-700 text-white focus:border-cyan-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                  }`}
                   placeholder="Tell people what you do and what you are building..."
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1">
+                <label className={`block text-[11px] font-semibold uppercase mb-1 ${
+                  isDark ? 'text-slate-400' : 'text-slate-700'
+                }`}>
                   Avatar / Profile Photo URL
                 </label>
                 <input
                   type="text"
                   value={profile.avatarUrl || ''}
                   onChange={(e) => handleUpdateField('avatarUrl', e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className={`w-full px-3 py-2 rounded-xl border text-xs focus:outline-none ${
+                    isDark
+                      ? 'bg-slate-950 border-slate-700 text-white focus:border-cyan-400'
+                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                  }`}
                   placeholder="https://images.unsplash.com/..."
                 />
               </div>
@@ -383,53 +455,89 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
 
           {/* Tab 2: Direct Contact Actions & Custom Links */}
           {activeTab === 'links' && (
-            <div className="p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <Globe className="w-4 h-4 text-cyan-400" />
+            <div className={`p-5 sm:p-6 rounded-3xl border shadow-xs space-y-4 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
+              <h2 className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
+                <Globe className={`w-4 h-4 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                 Contact Buttons & Highlight Links
               </h2>
 
               {/* Direct Quick Actions */}
-              <div className="space-y-3 p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-                <p className="text-xs font-bold text-slate-200">1-Click Direct Action Buttons</p>
+              <div className={`space-y-3 p-3.5 rounded-2xl border ${
+                isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <p className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                  1-Click Direct Action Buttons
+                </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-[10px] text-slate-400 uppercase font-semibold mb-1">Phone Number</label>
+                    <label className={`block text-[10px] uppercase font-semibold mb-1 ${
+                      isDark ? 'text-slate-400' : 'text-slate-600'
+                    }`}>
+                      Phone Number
+                    </label>
                     <input
                       type="text"
                       value={profile.phone || ''}
                       onChange={(e) => handleUpdateField('phone', e.target.value)}
                       placeholder="+1 (555) 000-0000"
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none"
+                      className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none ${
+                        isDark
+                          ? 'bg-slate-900 border-slate-700 text-white focus:border-cyan-400'
+                          : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-600'
+                      }`}
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] text-slate-400 uppercase font-semibold mb-1">Email Address</label>
+                    <label className={`block text-[10px] uppercase font-semibold mb-1 ${
+                      isDark ? 'text-slate-400' : 'text-slate-600'
+                    }`}>
+                      Email Address
+                    </label>
                     <input
                       type="email"
                       value={profile.email || ''}
                       onChange={(e) => handleUpdateField('email', e.target.value)}
                       placeholder="hello@domain.com"
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none"
+                      className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none ${
+                        isDark
+                          ? 'bg-slate-900 border-slate-700 text-white focus:border-cyan-400'
+                          : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-600'
+                      }`}
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] text-slate-400 uppercase font-semibold mb-1">WhatsApp No.</label>
+                    <label className={`block text-[10px] uppercase font-semibold mb-1 ${
+                      isDark ? 'text-slate-400' : 'text-slate-600'
+                    }`}>
+                      WhatsApp No.
+                    </label>
                     <input
                       type="text"
                       value={profile.whatsapp || ''}
                       onChange={(e) => handleUpdateField('whatsapp', e.target.value)}
                       placeholder="+15550000000"
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none"
+                      className={`w-full px-2.5 py-1.5 rounded-lg border text-xs focus:outline-none ${
+                        isDark
+                          ? 'bg-slate-900 border-slate-700 text-white focus:border-cyan-400'
+                          : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-600'
+                      }`}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Add Custom Link Form */}
-              <form onSubmit={handleAddCustomLink} className="p-3.5 rounded-2xl bg-slate-950/70 border border-cyan-500/20 space-y-2.5">
-                <p className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Plus className="w-3.5 h-3.5 text-cyan-400" />
+              <form onSubmit={handleAddCustomLink} className={`p-3.5 rounded-2xl border space-y-2.5 ${
+                isDark ? 'bg-slate-950/70 border-cyan-500/20' : 'bg-slate-50 border-cyan-500/40'
+              }`}>
+                <p className={`text-xs font-bold flex items-center gap-1.5 ${
+                  isDark ? 'text-white' : 'text-slate-900'
+                }`}>
+                  <Plus className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                   Add Custom Link Button
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -438,30 +546,40 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
                     placeholder="Button Title (e.g., Book Consultation)"
                     value={newLinkTitle}
                     onChange={(e) => setNewLinkTitle(e.target.value)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"
+                    className={`px-3 py-1.5 rounded-lg border text-xs focus:outline-none ${
+                      isDark
+                        ? 'bg-slate-900 border-slate-700 text-white focus:border-cyan-400'
+                        : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-600'
+                    }`}
                   />
                   <input
                     type="text"
                     placeholder="Target URL (https://...)"
                     value={newLinkUrl}
                     onChange={(e) => setNewLinkUrl(e.target.value)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-mono focus:outline-none ${
+                      isDark
+                        ? 'bg-slate-900 border-slate-700 text-white focus:border-cyan-400'
+                        : 'bg-white border-slate-300 text-slate-900 focus:border-cyan-600'
+                    }`}
                   />
                 </div>
                 <div className="flex items-center justify-between pt-1">
-                  <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                  <label className={`flex items-center gap-2 text-xs cursor-pointer ${
+                    isDark ? 'text-slate-300' : 'text-slate-700 font-medium'
+                  }`}>
                     <input
                       type="checkbox"
                       checked={newLinkHighlight}
                       onChange={(e) => setNewLinkHighlight(e.target.checked)}
-                      className="accent-cyan-400 rounded cursor-pointer"
+                      className="accent-cyan-500 rounded cursor-pointer"
                     />
                     <span>Highlight with pulsing glow</span>
                   </label>
                   <button
                     type="submit"
                     disabled={!newLinkTitle.trim() || !newLinkUrl.trim()}
-                    className="px-4 py-1.5 rounded-lg bg-cyan-400 text-slate-950 text-xs font-bold hover:bg-cyan-300 transition cursor-pointer disabled:opacity-50"
+                    className="px-4 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition cursor-pointer disabled:opacity-50"
                   >
                     Add Button
                   </button>
@@ -470,20 +588,35 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
 
               {/* Existing custom links list */}
               <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Current Link Buttons ({profile.customLinks.length})</p>
+                <p className={`text-[11px] font-semibold uppercase tracking-wider ${
+                  isDark ? 'text-slate-400' : 'text-slate-600'
+                }`}>
+                  Current Link Buttons ({profile.customLinks.length})
+                </p>
                 {profile.customLinks.map((link) => (
-                  <div key={link.id} className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
+                  <div
+                    key={link.id}
+                    className={`p-2.5 rounded-xl border flex items-center justify-between text-xs ${
+                      isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                    }`}
+                  >
                     <div className="truncate mr-2">
-                      <p className="font-bold text-white truncate flex items-center gap-1.5">
-                        {link.highlight && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                      <p className={`font-bold truncate flex items-center gap-1.5 ${
+                        isDark ? 'text-white' : 'text-slate-900'
+                      }`}>
+                        {link.highlight && <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />}
                         {link.title}
                       </p>
-                      <p className="text-[11px] text-slate-400 font-mono truncate">{link.url}</p>
+                      <p className={`text-[11px] font-mono truncate ${
+                        isDark ? 'text-slate-400' : 'text-slate-600'
+                      }`}>{link.url}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveCustomLink(link.id)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition cursor-pointer shrink-0"
+                      className={`p-1.5 rounded-lg transition cursor-pointer shrink-0 ${
+                        isDark ? 'text-slate-400 hover:text-rose-400 hover:bg-slate-800' : 'text-slate-500 hover:text-rose-600 hover:bg-slate-200'
+                      }`}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -495,9 +628,13 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
 
           {/* Tab 3: Social Profiles */}
           {activeTab === 'socials' && (
-            <div className="p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <Share2 className="w-4 h-4 text-cyan-400" />
+            <div className={`p-5 sm:p-6 rounded-3xl border shadow-xs space-y-4 ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
+              <h2 className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
+                <Share2 className={`w-4 h-4 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                 Social Profiles & Networks
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -512,8 +649,10 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
                   const Icon = soc.icon;
                   return (
                     <div key={soc.key}>
-                      <label className="block text-[11px] font-semibold text-slate-400 uppercase mb-1 flex items-center gap-1.5">
-                        <Icon className="w-3.5 h-3.5 text-slate-400" />
+                      <label className={`block text-[11px] font-semibold uppercase mb-1 flex items-center gap-1.5 ${
+                        isDark ? 'text-slate-400' : 'text-slate-700'
+                      }`}>
+                        <Icon className={`w-3.5 h-3.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
                         {soc.label}
                       </label>
                       <input
@@ -521,7 +660,11 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
                         value={(profile as any)[soc.key] || ''}
                         onChange={(e) => handleUpdateField(soc.key as any, e.target.value)}
                         placeholder={soc.placeholder}
-                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono"
+                        className={`w-full px-3 py-2 rounded-xl border text-xs font-mono focus:outline-none ${
+                          isDark
+                            ? 'bg-slate-950 border-slate-700 text-white focus:border-cyan-400'
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-600'
+                        }`}
                       />
                     </div>
                   );
@@ -532,23 +675,29 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
 
           {/* Tab 4: QR Code & Integration */}
           {activeTab === 'qr' && (
-            <div className="p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4 text-center">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-white flex items-center justify-center gap-2">
-                <QrCode className="w-4 h-4 text-cyan-400" />
+            <div className={`p-5 sm:p-6 rounded-3xl border shadow-xs space-y-4 text-center ${
+              isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
+              <h2 className={`text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
+                <QrCode className={`w-4 h-4 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                 Digital Landing Page QR Code
               </h2>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              <p className={`text-xs max-w-sm mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 Scan this code to immediately load this digital business card on any smartphone camera:
               </p>
 
-              <div className="flex justify-center p-6 rounded-3xl bg-slate-950 border border-slate-800 max-w-xs mx-auto">
+              <div className={`flex justify-center p-6 rounded-3xl border max-w-xs mx-auto ${
+                isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <QRCanvas
                   content={`https://nova-qr.app/bio/${profile.slug}`}
                   styleConfig={{
                     ...DEFAULT_STYLE,
                     size: 200,
-                    fgColor: themeStyles.qrFg,
-                    bgColor: '#020617',
+                    fgColor: isDark ? themeStyles.qrFg : (themeStyles.qrFg === '#e2e8f0' ? '#0f172a' : themeStyles.qrFg),
+                    bgColor: isDark ? '#020617' : '#ffffff',
                     dotType: 'rounded',
                     cornerSquareType: 'extra-rounded',
                     cornerDotType: 'dot',
@@ -559,14 +708,18 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
               <div className="flex justify-center gap-2">
                 <button
                   onClick={handleCopyBioUrl}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition cursor-pointer flex items-center gap-1.5"
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 border ${
+                    isDark
+                      ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+                  }`}
                 >
-                  <Copy className="w-3.5 h-3.5 text-cyan-400" />
+                  <Copy className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
                   <span>Copy Page URL</span>
                 </button>
                 <button
                   onClick={handleDownloadVCF}
-                  className="px-4 py-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-xs font-bold text-slate-950 transition cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-xs font-bold text-slate-950 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Save vCard</span>
@@ -579,8 +732,10 @@ export const LinkInBioView: React.FC<LinkInBioViewProps> = ({
         {/* Right Column (5 cols): Authentic Live Smartphone Mockup */}
         <div className="lg:col-span-5 flex flex-col items-center">
           <div className="sticky top-20 flex flex-col items-center space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Smartphone className="w-4 h-4 text-cyan-400" />
+            <span className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+              isDark ? 'text-slate-400' : 'text-slate-700'
+            }`}>
+              <Smartphone className={`w-4 h-4 ${isDark ? 'text-cyan-400' : 'text-cyan-700'}`} />
               Live Mobile Visitor Simulator
             </span>
 

@@ -78,11 +78,15 @@ export const CategoryForms: React.FC<CategoryFormsProps> = ({
   const inputClass = `w-full px-3.5 py-2.5 rounded-xl text-sm transition outline-none ${
     theme === 'dark'
       ? 'bg-slate-900/80 border border-slate-700/70 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30'
-      : 'bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600/30'
+      : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600/30 shadow-xs'
   }`;
 
-  const labelClass = `block text-xs font-semibold uppercase tracking-wider mb-1.5 ${
-    theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+  const labelClass = `block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+    theme === 'dark' ? 'text-slate-400' : 'text-slate-700'
+  }`;
+
+  const helperTextClass = `text-xs ${
+    theme === 'dark' ? 'text-slate-500' : 'text-slate-600'
   }`;
 
   return (
@@ -107,7 +111,7 @@ export const CategoryForms: React.FC<CategoryFormsProps> = ({
               autoFocus
             />
           </div>
-          <p className="text-xs text-slate-500">
+          <p className={helperTextClass}>
             Enter a web address. Readers will open this link directly in their browser.
           </p>
         </div>
@@ -130,7 +134,7 @@ export const CategoryForms: React.FC<CategoryFormsProps> = ({
               autoFocus
             />
           </div>
-          <div className="flex justify-between items-center text-xs text-slate-500">
+          <div className={`flex justify-between items-center ${helperTextClass}`}>
             <span>Standard ASCII or UTF-8 text</span>
             <span>{textValue.length} characters</span>
           </div>
@@ -202,16 +206,20 @@ export const CategoryForms: React.FC<CategoryFormsProps> = ({
             </div>
           </div>
 
-          <label className="flex items-center gap-2 text-xs font-medium cursor-pointer select-none text-slate-300">
+          <label className={`flex items-center gap-2 text-xs font-medium cursor-pointer select-none ${
+            theme === 'dark' ? 'text-slate-300' : 'text-slate-700'
+          }`}>
             <input
               id="wifi-hidden"
               type="checkbox"
               checked={wifiForm.hidden}
               onChange={(e) => onWifiChange({ ...wifiForm, hidden: e.target.checked })}
-              className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-400/40 w-4 h-4"
+              className={`rounded ${
+                theme === 'dark' ? 'border-slate-700' : 'border-slate-300'
+              } text-cyan-600 focus:ring-cyan-500/40 w-4 h-4`}
             />
             <span className="flex items-center gap-1.5">
-              <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+              <EyeOff className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`} />
               Hidden network (SSID is not broadcasted)
             </span>
           </label>
@@ -237,7 +245,7 @@ export const CategoryForms: React.FC<CategoryFormsProps> = ({
               className={`${inputClass} pl-10`}
             />
           </div>
-          <p className="text-xs text-slate-500">
+          <p className={helperTextClass}>
             Include country code for international compatibility (e.g. +1, +44, +91).
           </p>
         </div>
