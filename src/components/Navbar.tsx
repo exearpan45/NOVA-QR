@@ -89,7 +89,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     user?.user_metadata?.full_name ||
     user?.user_metadata?.user_name ||
     user?.email?.split('@')[0] ||
-    user?.phone ||
     'Account';
 
   const userInitials = (userDisplayName || 'U')
@@ -206,7 +205,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </span>
                       </div>
                       <p className={`text-xs font-bold truncate ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{userDisplayName}</p>
-                      <p className={`text-[11px] font-mono truncate ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{user.email || user.phone}</p>
+                      <p className={`text-[11px] font-mono truncate ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{user.email || 'Email account'}</p>
                     </div>
 
                     {/* Quick Shortcuts */}
