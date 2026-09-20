@@ -9,9 +9,6 @@ import {
   CheckCircle2,
   Loader2,
   KeyRound,
-  Github,
-  Facebook,
-  Phone,
   RotateCcw,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
@@ -33,7 +30,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   theme,
   onSuccess,
 }) => {
-  const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [mode, setMode] = useState<"login" | "signup" | "forgot">(initialMode);
 
   // Email / Password states
@@ -42,15 +38,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
 
-  // Mobile / Phone OTP states
-  const [phone, setPhone] = useState("");
-  const [otpCode, setOtpCode] = useState("");
-  const [phoneStep, setPhoneStep] = useState<"request" | "verify">("request");
-
   // Loadings and messages
   const [loading, setLoading] = useState(false);
-  const [githubLoading, setGithubLoading] = useState(false);
-  const [facebookLoading, setFacebookLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
@@ -60,7 +49,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setMode(initialMode);
       setErrorMessage(null);
       setInfoMessage(null);
-      setPhoneStep("request");
       setOtpCode("");
     }
   }, [isOpen, initialMode]);
@@ -72,9 +60,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setPassword("");
     setConfirmPassword("");
     setFullName("");
-    setPhone("");
-    setOtpCode("");
-    setPhoneStep("request");
     setErrorMessage(null);
     setInfoMessage(null);
   };
@@ -83,184 +68,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setMode(newMode);
     setErrorMessage(null);
     setInfoMessage(null);
-  };
-
-  // GitHub OAuth Sign In
-  const handleGitHubSignIn = async () => {
-    setErrorMessage(null);
-    setInfoMessage(null);
-    setGithubLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "github",
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (err: unknown) {
-      const msg = (err as Error).message || "";
-      if (
-        msg.toLowerCase().includes("unsupported provider") ||
-        msg.toLowerCase().includes("not enabled")
-      ) {
-        setErrorMessage(
-          "GitHub Authentication is not enabled yet in your backend project settings. Please turn on GitHub in your Supabase Auth Providers dashboard, or use Phone Number / Email below.",
-        );
-      } else {
-        setErrorMessage(
-          msg || "Failed to initialize GitHub sign in. Please try again.",
-        );
-      }
-      setGithubLoading(false);
-    }
-  };
-
-  // Facebook OAuth Sign In
-  const handleFacebookSignIn = async () => {
-    setErrorMessage(null);
-    setInfoMessage(null);
-    setFacebookLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "facebook",
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (err: unknown) {
-      const msg = (err as Error).message || "";
-      if (
-        msg.toLowerCase().includes("unsupported provider") ||
-        msg.toLowerCase().includes("not enabled")
-      ) {
-        setErrorMessage(
-          "Facebook Login is not enabled yet in your backend project settings. Please enable the Facebook provider in your Supabase Auth Providers dashboard, or use GitHub / Phone / Email below.",
-        );
-      } else {
-        setErrorMessage(
-          msg || "Failed to initialize Facebook sign in. Please try again.",
-        );
-      }
-      setFacebookLoading(false);
-    }
-  };
-
-  // Mobile Number: Send OTP SMS
-  const handleSendPhoneOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    setInfoMessage(null);
-
-    let cleanPhone = phone.trim().replace(/[\s-()]/g, "");
-    if (!cleanPhone) {
-      setErrorMessage("Please enter your mobile number.");
-      return;
-    }
-
-    // Ensure it has country code prefix
-    if (!cleanPhone.startsWith("+")) {
-      cleanPhone = "+" + cleanPhone;
-    }
-
-    if (cleanPhone.length < 8) {
-      setErrorMessage(
-        "Please enter a valid mobile number with country code (e.g. +1234567890 or +919876543210).",
-      );
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: cleanPhone,
-      });
-
-      if (error) throw error;
-
-      setPhone(cleanPhone);
-      setPhoneStep("verify");
-      setInfoMessage(
-        `Verification code sent to ${cleanPhone}. Please enter the 6-digit OTP.`,
-      );
-      onSuccess(`OTP sent to ${cleanPhone}`);
-    } catch (err: unknown) {
-      const msg = (err as Error).message || "";
-      if (
-        msg.toLowerCase().includes("unsupported provider") ||
-        msg.toLowerCase().includes("sms provider") ||
-        msg.toLowerCase().includes("not enabled")
-      ) {
-        setErrorMessage(
-          "SMS provider (Twilio / MessageBird) is not configured yet in your backend dashboard. Please configure an SMS provider or use Email / GitHub.",
-        );
-      } else {
-        setErrorMessage(
-          msg ||
-            "Failed to send OTP to mobile number. Please check the number and try again.",
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Mobile Number: Verify OTP
-  const handleVerifyPhoneOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    setInfoMessage(null);
-
-    const cleanToken = otpCode.trim();
-    if (!cleanToken || cleanToken.length < 4) {
-      setErrorMessage("Please enter the verification code received via SMS.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone,
-        token: cleanToken,
-        type: "sms",
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        try {
-          await syncHistoryWithCloud(data.user);
-        } catch (syncErr) {
-          console.error("Phone login history sync error:", syncErr);
-        }
-      }
-
-      if (data.session) {
-        onSuccess("Mobile number verified! Logged in successfully.");
-        resetForm();
-        onClose();
-      } else {
-        onSuccess("Mobile number verified!");
-        resetForm();
-        onClose();
-      }
-    } catch (err: unknown) {
-      setErrorMessage(
-        (err as Error).message ||
-          "Invalid or expired verification code. Please try again.",
-      );
-    } finally {
-      setLoading(false);
-    }
   };
 
   // Email & Password Auth Handler
@@ -431,330 +238,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               theme === "dark" ? "text-white" : "text-slate-900"
             }`}
           >
-            {authMethod === "phone"
-              ? "Mobile Number Sign-In"
-              : mode === "login"
-                ? "Welcome to NOVA QR"
-                : mode === "signup"
-                  ? "Create Your Account"
-                  : "Reset Password"}
+            {mode === "login"
+              ? "Welcome to NOVA QR"
+              : mode === "signup"
+                ? "Create Your Account"
+                : "Reset Password"}
           </h2>
           <p
             className={`text-xs mt-1 max-w-xs font-medium ${
               theme === "dark" ? "text-slate-400" : "text-slate-600"
             }`}
           >
-            {authMethod === "phone"
-              ? "Instant verification via mobile SMS OTP."
-              : mode === "login"
-                ? "Log in to securely sync your QR codes and preferences."
-                : mode === "signup"
-                  ? "Create an account to securely save and access your QR codes anywhere."
-                  : "Enter your email to receive password recovery instructions."}
+            {mode === "login"
+              ? "Log in to securely sync your QR codes and preferences."
+              : mode === "signup"
+                ? "Create an account to securely save and access your QR codes anywhere."
+                : "Enter your email to receive password recovery instructions."}
           </p>
         </div>
 
-        {/* Social OAuth Buttons: GitHub & Facebook */}
+        {/* Email-only authentication */}
         <div className="mb-4">
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={handleGitHubSignIn}
-              disabled={loading || githubLoading || facebookLoading}
-              className={`py-2.5 px-3 rounded-xl border font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-xs disabled:opacity-60 disabled:cursor-not-allowed group ${
-                theme === "dark"
-                  ? "border-slate-800 hover:border-slate-700 bg-slate-950/70 hover:bg-slate-900 text-slate-200 hover:text-white"
-                  : "border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-800 hover:text-slate-950"
-              }`}
-            >
-              {githubLoading ? (
-                <Loader2
-                  className={`w-3.5 h-3.5 animate-spin ${theme === "dark" ? "text-cyan-400" : "text-cyan-600"}`}
-                />
-              ) : (
-                <Github
-                  className={`w-3.5 h-3.5 group-hover:scale-110 transition-transform ${
-                    theme === "dark" ? "text-cyan-400" : "text-slate-900"
-                  }`}
-                />
-              )}
-              <span>GitHub</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleFacebookSignIn}
-              disabled={loading || githubLoading || facebookLoading}
-              className={`py-2.5 px-3 rounded-xl border font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-xs disabled:opacity-60 disabled:cursor-not-allowed group ${
-                theme === "dark"
-                  ? "border-slate-800 hover:border-blue-900/60 bg-slate-950/70 hover:bg-blue-950/20 text-slate-200 hover:text-white"
-                  : "border-slate-300 hover:border-blue-300 bg-slate-50 hover:bg-blue-50/50 text-slate-800 hover:text-slate-950"
-              }`}
-            >
-              {facebookLoading ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-500" />
-              ) : (
-                <Facebook className="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform" />
-              )}
-              <span>Facebook</span>
-            </button>
-          </div>
-
-          <div className="relative my-4 flex items-center justify-center">
-            <div
-              className={`border-t w-full ${theme === "dark" ? "border-slate-800" : "border-slate-200"}`}
-            />
-            <span
-              className={`px-3 text-[11px] font-bold uppercase tracking-wider absolute ${
-                theme === "dark"
-                  ? "bg-slate-900 text-slate-400"
-                  : "bg-white text-slate-600"
-              }`}
-            >
-              or continue with
-            </span>
+          <div className={`flex items-center justify-center gap-2 text-xs font-semibold ${
+            theme === "dark" ? "text-slate-400" : "text-slate-600"
+          }`}>
+            <Mail className="w-4 h-4 text-cyan-500" />
+            <span>Continue with Gmail / Email</span>
           </div>
         </div>
 
-        {/* Primary Method Switcher: Email vs Mobile Number */}
-        <div
-          className={`grid grid-cols-2 gap-1.5 p-1 rounded-xl border mb-4 ${
-            theme === "dark"
-              ? "bg-slate-950/60 border-slate-800/80"
-              : "bg-slate-100 border-slate-200"
-          }`}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              setAuthMethod("email");
-              setErrorMessage(null);
-              setInfoMessage(null);
-            }}
-            className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              authMethod === "email"
-                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
-                : theme === "dark"
-                  ? "text-slate-400 hover:text-white"
-                  : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Mail className="w-3.5 h-3.5" />
-            <span>Email</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setAuthMethod("phone");
-              setErrorMessage(null);
-              setInfoMessage(null);
-            }}
-            className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              authMethod === "phone"
-                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md"
-                : theme === "dark"
-                  ? "text-slate-400 hover:text-white"
-                  : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Phone className="w-3.5 h-3.5" />
-            <span>Mobile No.</span>
-          </button>
-        </div>
-
-        {/* Status Alerts */}
-        {errorMessage && (
-          <div
-            className={`mb-4 p-3 rounded-xl border text-xs flex items-start gap-2.5 animate-fadeIn ${
-              theme === "dark"
-                ? "bg-rose-950/40 border-rose-500/30 text-rose-300"
-                : "bg-rose-50 border-rose-300 text-rose-800 font-medium"
-            }`}
-          >
-            <AlertCircle
-              className={`w-4 h-4 shrink-0 mt-0.5 ${
-                theme === "dark" ? "text-rose-400" : "text-rose-600"
-              }`}
-            />
-            <span>{errorMessage}</span>
-          </div>
-        )}
-
-        {infoMessage && (
-          <div
-            className={`mb-4 p-3 rounded-xl border text-xs flex items-start gap-2.5 animate-fadeIn ${
-              theme === "dark"
-                ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-300"
-                : "bg-emerald-50 border-emerald-300 text-emerald-800 font-medium"
-            }`}
-          >
-            <CheckCircle2
-              className={`w-4 h-4 shrink-0 mt-0.5 ${
-                theme === "dark" ? "text-emerald-400" : "text-emerald-600"
-              }`}
-            />
-            <span>{infoMessage}</span>
-          </div>
-        )}
-
-        {/* FORM 1: Mobile Number (SMS OTP) */}
-        {authMethod === "phone" && (
-          <div>
-            {phoneStep === "request" ? (
-              <form onSubmit={handleSendPhoneOtp} className="space-y-4">
-                <div>
-                  <label
-                    className={`block text-xs font-bold mb-1.5 ${
-                      theme === "dark" ? "text-slate-300" : "text-slate-700"
-                    }`}
-                  >
-                    Mobile Number (with country code)
-                  </label>
-                  <div className="relative">
-                    <Phone
-                      className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
-                        theme === "dark" ? "text-slate-400" : "text-slate-500"
-                      }`}
-                    />
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+1 555 123 4567 or +91 9876543210"
-                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none transition font-mono ${
-                        theme === "dark"
-                          ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                          : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
-                      }`}
-                    />
-                  </div>
-                  <p
-                    className={`text-[11px] mt-1.5 ${theme === "dark" ? "text-slate-400" : "text-slate-600"}`}
-                  >
-                    Include your country calling code (e.g. +1 for US, +91 for
-                    India).
-                  </p>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Sending SMS Code...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Send Verification Code</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyPhoneOtp} className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label
-                      className={`text-xs font-bold ${
-                        theme === "dark" ? "text-slate-300" : "text-slate-700"
-                      }`}
-                    >
-                      Enter 6-Digit SMS OTP
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setPhoneStep("request")}
-                      className={`text-[11px] transition cursor-pointer flex items-center gap-1 font-semibold ${
-                        theme === "dark"
-                          ? "text-cyan-400 hover:text-cyan-300"
-                          : "text-cyan-700 hover:text-cyan-800"
-                      }`}
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                      <span>Change Number</span>
-                    </button>
-                  </div>
-                  <div className="relative">
-                    <KeyRound
-                      className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
-                        theme === "dark" ? "text-slate-400" : "text-slate-500"
-                      }`}
-                    />
-                    <input
-                      type="text"
-                      maxLength={8}
-                      required
-                      autoFocus
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value)}
-                      placeholder="123456"
-                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm outline-none transition font-mono tracking-widest text-center ${
-                        theme === "dark"
-                          ? "bg-slate-950/60 border border-slate-800 text-slate-100 placeholder-slate-500 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                          : "bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600 shadow-xs"
-                      }`}
-                    />
-                  </div>
-                  <p
-                    className={`text-[11px] mt-1.5 text-center ${
-                      theme === "dark" ? "text-slate-400" : "text-slate-600"
-                    }`}
-                  >
-                    Sent to{" "}
-                    <span
-                      className={`font-mono font-bold ${
-                        theme === "dark" ? "text-cyan-300" : "text-cyan-700"
-                      }`}
-                    >
-                      {phone}
-                    </span>
-                  </p>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Verifying...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Verify & Sign In</span>
-                      <CheckCircle2 className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-
-                <div className="text-center pt-1">
-                  <button
-                    type="button"
-                    onClick={handleSendPhoneOtp}
-                    disabled={loading}
-                    className={`text-xs transition cursor-pointer disabled:opacity-50 font-medium ${
-                      theme === "dark"
-                        ? "text-slate-400 hover:text-cyan-400"
-                        : "text-slate-600 hover:text-cyan-700"
-                    }`}
-                  >
-                    Didn't receive the code? Resend SMS
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        )}
-
-        {/* FORM 2: Email & Password */}
-        {authMethod === "email" && (
+        {/* FORM: Email & Password */}
+        {true && (
           <div>
             {/* Mode Switcher Tabs (Login vs Signup) */}
             {mode !== "forgot" && (
